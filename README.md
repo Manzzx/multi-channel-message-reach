@@ -34,10 +34,10 @@ web模块：消息推送功能模块
 
 
 # 安装教程
-#### 运行必需依赖
+#### 运行必需服务
 Redis、RabbitMQ、Xxl-job、Nacos、Mysql
 
-#### 运行非必需依赖
+#### 运行非必需服务
 Sentinel、SpringbootAdmin（visual模块）
 
 #### 后端
@@ -46,7 +46,7 @@ Sentinel、SpringbootAdmin（visual模块）
 
 2. 需要给调用xxl-job的接口加上@PermissionLimit(limit=false)开放权限
 
-3. 修改各服务组件地址
+3. 修改各服务组件地址,各服务的bootstrap.yml文件和Nacos配置文件
 
 #### 前端
 #### 进入项目目录
