@@ -14,12 +14,12 @@ web模块：消息推送功能模块
 
 
 #### 安装教程
-后端
+#### 后端
 1. docker安装redis、rabbitMQ、mysql、nacos
 
 2. 修改各服务组件地址
 
-前端
+#### 前端
 #### 进入项目目录
 1. cd metax-ui
 
