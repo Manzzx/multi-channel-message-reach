@@ -66,33 +66,30 @@ Sentinel、SpringbootAdmin（visual模块）
 3. 新增渠道消息模板
 
 # 演示图
-<p >
-    <a href="#"><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></a>
-</p>
 
 <table>
     <tr>
         <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/0.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/0.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/1.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/2.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/1.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/2.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/3.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/4.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/3.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/4.png"/></td>
     </tr>
      <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/5.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/6.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/5.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/6.png"/></td>
     </tr>
      <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/7.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/8.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/7.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/8.png"/></td>
     </tr>
      <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/9.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/9.png"/></td>
     </tr>
 	
 </table>
