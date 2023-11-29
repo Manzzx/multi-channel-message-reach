@@ -67,6 +67,33 @@ Sentinel、SpringbootAdmin（visual模块）
 
 # 演示图
 
+<table>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/0.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/1.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/2.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/3.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/4.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/5.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/6.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/7.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/8.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/blob/master/doc/imgs/9.png"/></td>
+    </tr>
+	
+</table>
+
  
 
 #### 参与贡献
