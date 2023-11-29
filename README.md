@@ -20,13 +20,13 @@ web模块：消息推送功能模块
 2. 修改各服务组件地址
 
 前端
-# 进入项目目录
+#### 进入项目目录
 1. cd metax-ui
 
-# 安装依赖
+#### 安装依赖
 2. npm install --registry=https://registry.npmmirror.com
 
-# 启动服务
+#### 启动服务
 3. npm run dev
 
 #### 使用说明
