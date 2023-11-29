@@ -5,6 +5,35 @@
 通过与消息推送平台的接口对接，开发者无需自行编写发送消息的代码，从而实现业务逻辑代码和发送消息逻辑代码的解耦。
 能够让开发者能够更加专注于核心业务开发，提高开发效率，并且实现了消息发送的统一管理和多渠道的灵活选择。
 
+# 演示图
+
+<table>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/0.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/1.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/2.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/3.jpg"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/4.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/5.jpg"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/6.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/7.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/8.png"/></td>
+    </tr>
+     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/9.jpg"/></td>
+    </tr>
+	
+</table>
+
 
 # 软件架构
 api模块：系统接口
@@ -67,35 +96,6 @@ Sentinel、SpringbootAdmin（visual模块）
 2. 配置个人渠道账号
 
 3. 新增渠道消息模板
-
-# 演示图
-
-<table>
-    <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/0.png"/></td>
-    </tr>
-    <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/1.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/2.png"/></td>
-    </tr>
-    <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/3.jpg"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/4.png"/></td>
-    </tr>
-     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/5.jpg"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/6.png"/></td>
-    </tr>
-     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/7.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/8.png"/></td>
-    </tr>
-     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/9.jpg"/></td>
-    </tr>
-	
-</table>
 
  
 
