@@ -1,0 +1,2 @@
+com.metax.common.redis.configure.RedisConfig
+com.metax.common.redis.service.RedisService

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.metax</groupId>
+        <artifactId>metax</artifactId>
+        <version>3.6.3</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>metax-common-log</module>
+        <module>metax-common-core</module>
+        <module>metax-common-redis</module>
+        <module>metax-common-seata</module>
+        <module>metax-common-swagger</module>
+        <module>metax-common-security</module>
+        <module>metax-common-datascope</module>
+        <module>metax-common-datasource</module>
+    </modules>
+
+    <artifactId>metax-common</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        metax-common通用模块
+    </description>
+
+</project>

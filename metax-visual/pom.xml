@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.metax</groupId>
+        <artifactId>metax</artifactId>
+        <version>3.6.3</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>metax-monitor</module>
+    </modules>
+
+    <artifactId>metax-visual</artifactId>
+    <packaging>pom</packaging>
+
+    <description>
+        metax-visual图形化管理模块
+    </description>
+
+</project>

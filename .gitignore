@@ -1,0 +1,17 @@
+/logs/
+/metax-web/target/
+/metax-common/metax-common-core/target/
+/metax-api/metax-api-system/target/
+/metax-auth/target/
+/metax-common/metax-common-datascope/target/
+/metax-common/metax-common-datasource/target/
+/metax-common/metax-common-log/target/
+/metax-common/metax-common-redis/target/
+/metax-common/metax-common-security/target/
+/metax-common/metax-common-swagger/target/
+/metax-gateway/target/
+/metax-modules/metax-file/target/
+/metax-modules/metax-gen/target/
+/metax-modules/metax-system/target/
+/metax-visual/metax-monitor/target/
+/xxl-job/

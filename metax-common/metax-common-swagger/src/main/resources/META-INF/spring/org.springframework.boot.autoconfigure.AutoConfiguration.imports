@@ -1,0 +1,3 @@
+# com.metax.common.swagger.config.SwaggerAutoConfiguration
+# com.metax.common.swagger.config.SwaggerWebConfiguration
+# com.metax.common.swagger.config.SwaggerBeanPostProcessor

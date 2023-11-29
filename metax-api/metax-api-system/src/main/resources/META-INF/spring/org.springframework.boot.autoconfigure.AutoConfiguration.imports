@@ -1,0 +1,4 @@
+com.metax.system.api.factory.RemoteUserFallbackFactory
+com.metax.system.api.factory.RemoteLogFallbackFactory
+com.metax.system.api.factory.RemoteFileFallbackFactory
+com.metax.system.api.factory.RemoteRoleFallbackFactory

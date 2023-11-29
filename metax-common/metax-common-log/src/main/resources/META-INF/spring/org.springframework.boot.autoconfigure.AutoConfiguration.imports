@@ -1,0 +1,2 @@
+com.metax.common.log.service.AsyncLogService
+com.metax.common.log.aspect.LogAspect

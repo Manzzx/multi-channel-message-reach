@@ -1,0 +1,24 @@
+# 环境变量可参考： https://www.rabbitmq.com/configure.html
+#               https://github.com/rabbitmq/rabbitmq-server/blob/master/deps/rabbit/docs/rabbitmq.conf.example
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3.9.15-management        # 镜像`rabbitmq:3.9.1-management` 【 注：该版本包含了web控制页面 】
+    container_name: rabbitmq            # 容器名为'rabbitmq'
+    hostname: my-rabbit
+    restart: unless-stopped                                       # 指定容器退出后的重启策略为始终重启，但是不考虑在Docker守护进程启动时就已经停止了的容器
+    environment:                        # 设置环境变量,相当于docker run命令中的-e
+      TZ: Asia/Shanghai
+      LANG: en_US.UTF-8
+      RABBITMQ_DEFAULT_VHOST: my_host  # 主机名
+      RABBITMQ_DEFAULT_USER: metax      # 登录账号
+      RABBITMQ_DEFAULT_PASS: 630204388      # 登录密码
+    volumes:                            # 数据卷挂载路径设置,将本机目录映射到容器目录
+      - "/home/rabbitmq/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf"
+      - "/home/rabbitmq/config/10-default-guest-user.conf:/etc/rabbitmq/conf.d/10-default-guest-user.conf"
+      - "/home/rabbitmq/data:/var/lib/rabbitmq"
+      - "/home/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.9.0.ez:/opt/rabbitmq/plugins/rabbitmq_delayed_message_exchange-3.9.0.ez"
+#      - "/home/rabbitmq/log:/var/log/rabbitmq"
+    ports:                              # 映射端口
+      - "5672:5672"
+      - "15672:15672"
