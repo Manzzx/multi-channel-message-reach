@@ -4,20 +4,40 @@
 多渠道消息推送平台是一个为应用开发者提供服务的平台，旨在解决发送消息的需求。
 
 #### 软件架构
-软件架构说明
+api模块：系统接口
+common模块：通用模块
+gateway模块：网关
+modules模块：系统基础功能模块
+ui模块：前端
+visual模块：系统监控
+web模块：消息推送功能模块
 
 
 #### 安装教程
+后端
+1. docker安装redis、rabbitMQ、mysql、nacos
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+2. 修改各服务组件地址
+
+前端
+# 进入项目目录
+1. cd metax-ui
+
+# 安装依赖
+2. npm install --registry=https://registry.npmmirror.com
+
+# 启动服务
+3. npm run dev
 
 #### 使用说明
+1. 管理员账号密码：admin admin123
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+2. 配置个人渠道账号
+
+3. 新增渠道消息模板
+
+演示图
+ 
 
 #### 参与贡献
 
