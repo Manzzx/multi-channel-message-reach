@@ -143,9 +143,9 @@
           <el-form-item label="账号配置" prop="accountConfig">
             <el-input v-model="form.accountConfig" type="textarea" placeholder="请输入内容"/>
             <p>
-              阿里云短信配置案例:{"regionId":"cn-hangzhou","accessKeyId":"LTt8JSkd6sf545dsfsfWJ","accessSecret":"kv6Jdsf5dsfsdf6sdfA5iBI","templateCode":"SMS_20965498","signName":"xxx个人网站","serviceName":"alibabaCloudService"}</p>
+              阿里云短信配置案例:{"regionId":"cn-hangzhou","accessKeyId":"LTt8JSkd6sf545derasfsfWJ","accessSecret":"kv6Jdsf5dsfsdfg34f6sdfA5iBI","templateCode":"SMS_20965498","signName":"xxx个人网站","serviceName":"alibabaCloudServiceSms"}</p>
             <p>
-              腾讯云短信配置案例:{"endpoint":"sms.tencentcloudapi.com","region":"ap-guangzhou","secretId":"AKIFGDSfdsfsdg54456sgsdf","secretKey":"e9awD6Umsdfdsfd5654624554fdgdfg9","smsSdkAppId":"12345678","templateId":"12345678","signName":"Metax日常个人公众号","serviceName":"tencentCloudSmsService"}</p>
+              腾讯云短信配置案例:{"endpoint":"sms.tencentcloudapi.com","region":"ap-guangzhou","secretId":"AKIFG3DSfdsfsd54g54456sgsdf","secretKey":"e9awD6Umsdfdsfd5654624554fdf3dgdfg9","smsSdkAppId":"12345678","templateId":"12345678","signName":"Metax日常个人公众号","serviceName":"tencentCloudServiceSms"}</p>
           </el-form-item>
         </div>
         <div v-if="form.sendChannel === '30'">
