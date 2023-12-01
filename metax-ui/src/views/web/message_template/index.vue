@@ -299,7 +299,7 @@
           <el-input
             type="textarea"
             autosize
-            placeholder="占位符用${var}表示 留空将发送默认信息"
+            placeholder="占位符用${var}表示 可插入HTML片段 留空将发送默认信息"
             v-model="email.content">
           </el-input>
         </el-form-item>
