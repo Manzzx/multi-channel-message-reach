@@ -95,7 +95,7 @@ Sentinel、SpringbootAdmin（visual模块）
 
 2. 配置个人渠道账号
 
-3. 新增渠道消息模板
+3. 新增渠道消息模板（插入HTML片段需要配置XXS排除路径）
 
  
 
