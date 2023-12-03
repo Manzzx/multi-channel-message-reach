@@ -1,10 +1,10 @@
 <template>
   <div class="login">
     <div class="login-logo">
-      <span> Metax | 多渠道消息推送系统</span>
+      <span> Metax | 多渠道消息触达平台</span>
     </div>
     <h2 class="main-title"><span>Metax</span></h2>
-    <h3 class="sub-title">统一、可靠、简单的多渠道消息推送系统</h3>
+    <h3 class="sub-title">统一、可靠、简单的多渠道消息触达平台</h3>
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">登录</h3>
       <el-form-item prop="username">
