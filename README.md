@@ -64,6 +64,10 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
         <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/2.png"/></td>
     </tr>
     <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/10.png"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/11.png"/></td>
+    </tr>
+    <tr>
         <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/3.jpg"/></td>
         <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/4.png"/></td>
     </tr>
