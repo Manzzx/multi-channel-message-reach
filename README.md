@@ -119,13 +119,13 @@ Sentinel、SpringbootAdmin（visual模块）
 #### 前端
 1. **进入项目目录**
 
-cd metax-ui
+    cd metax-ui
 
 2. **安装依赖**
 
- npm install 
+    npm install 
  
- npm install --registry=https://registry.npmmirror.com
+    npm install --registry=https://registry.npmmirror.com
 
 3. **启动服务**
 
