@@ -117,15 +117,11 @@ Sentinel、SpringbootAdmin（visual模块）
 3. 修改各服务组件地址,各服务的bootstrap.yml文件和Nacos配置文件
 
 #### 前端
-**进入项目目录**
-1. cd metax-ui
+1. **进入项目目录**：cd metax-ui
 
-**安装依赖**
-2. npm install
-3. npm install --registry=https://registry.npmmirror.com
+2. **安装依赖**： npm install 或者 npm install --registry=https://registry.npmmirror.com
 
-**启动服务**
-4. npm run dev
+3. **启动服务**：npm run dev
 
 # 使用说明
 1. 管理员账号密码：admin admin123
