@@ -129,7 +129,7 @@ Sentinel、SpringbootAdmin（visual模块）
 
 3. **启动服务**
 
-npm run dev
+    npm run dev
 
 # 使用说明
 1. 管理员账号密码：admin admin123
