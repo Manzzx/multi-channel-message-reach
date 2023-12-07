@@ -103,7 +103,7 @@ web模块：消息推送功能模块
 
 # 安装教程
 #### 运行必需服务
-Redis、RabbitMQ、Xxl-job、Nacos、Mysql
+Redis、RabbitMQ、Xxl-job、Nacos、Mysql5.7
 
 #### 运行非必需服务
 Sentinel、SpringbootAdmin（visual模块）
@@ -117,14 +117,14 @@ Sentinel、SpringbootAdmin（visual模块）
 3. 修改各服务组件地址,各服务的bootstrap.yml文件和Nacos配置文件
 
 #### 前端
-#### 进入项目目录
+**进入项目目录**
 1. cd metax-ui
 
-#### 安装依赖
-2. npm npm install
+**安装依赖**
+2. npm install
 3. npm install --registry=https://registry.npmmirror.com
 
-#### 启动服务
+**启动服务**
 4. npm run dev
 
 # 使用说明
