@@ -116,7 +116,7 @@ Sentinel、SpringbootAdmin（visual模块）
 
 3. 修改各服务组件地址,各服务的bootstrap.yml文件和Nacos配置文件
 
-4. 延迟队列需要安装RabbitMQ延迟队列插件才能生效（可选）
+4. 延迟队列需要安装RabbitMQ延迟队列插件才能生效（如果延迟队列不生效可能会导致消息直接超时处理）
 
 #### 前端
 1. **进入项目目录**
