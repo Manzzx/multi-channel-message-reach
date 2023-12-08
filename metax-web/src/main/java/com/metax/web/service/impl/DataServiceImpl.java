@@ -230,6 +230,8 @@ public class DataServiceImpl implements IDataService {
             recordingSuccessAndFailAndSendingNum();
             return new ArrayList<>();
         }
+        //集合反转
+        Collections.reverse(list);
         //存放当天下发人数
         AtomicReference<Integer> sendTotalOfDay = new AtomicReference<>();
         sendTotalOfDay.set(0);

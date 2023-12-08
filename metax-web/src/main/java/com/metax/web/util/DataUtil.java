@@ -23,12 +23,10 @@ import javax.annotation.PostConstruct;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.metax.common.core.constant.RedissonConstants.SEND_CONTENT_LOCK;
 import static com.metax.common.core.constant.SendMessageTypeConstants.*;
 import static com.metax.common.core.constant.MetaxDataConstants.*;
 
@@ -79,7 +77,7 @@ public class DataUtil {
     public Map<String, Integer> channelMappingToInteger() {
         Map<String, Integer> map = new HashMap<>();
         for (int i = 0; i < channelConfig.channels.size(); i++) {
-            map.put(channelConfig.channelCNNames.get(i),channelConfig.channels.get(i));
+            map.put(channelConfig.channelCNNames.get(i), channelConfig.channels.get(i));
         }
         return map;
     }
@@ -204,12 +202,14 @@ public class DataUtil {
         if (StrUtil.isBlank(messageRedisKey)) {
             throw new ServiceException(SEND_MESSAGE_KEY + "is null");
         }
-        RLock rLock = redissonClient.getLock(SEND_CONTENT_LOCK + sendTaskId);;
+        RLock rLock = redissonClient.getLock(SEND_CONTENT_LOCK + sendTaskId);
         try {
             rLock.lock();
-            List<SendContent> sendContexts =
-                    stringConvertSendContext(Objects.requireNonNull(stringRedisTemplate.opsForList()
-                            .range(messageRedisKey, 0, -1)));
+            List<String> list = stringRedisTemplate.opsForList().range(messageRedisKey, 0, -1);
+            if (Objects.isNull(list)) {
+                throw new ServiceException("消息数据丢失!");
+            }
+            List<SendContent> sendContexts = stringConvertSendContext(list);
             updateMsgStatus(sendContexts, messageId, sendId, messageRedisKey, sendTaskId, ex);
         } catch (Exception e) {
             log.error("发送流程出现异常", e);
@@ -229,6 +229,52 @@ public class DataUtil {
         if (sendTaskId == null || sendTaskId == 0) {
             throw new ServiceException(SEND_TASK_ID + "is null");
         }
+        //从数组尾部开始遍历
+        for (int i = sendContexts.size() - 1; i >= 0; i--) {
+            //从当天发送任务集合中筛选出本次发送任务
+            if (Objects.equals(sendContexts.get(i).getSendTaskId(), sendTaskId)) {
+                //获取当前子任务
+                List<SendTaskInfo> sendTasks = sendContexts.get(i).getSendTasks();
+                for (SendTaskInfo sendTask : sendTasks) {
+                    if (Objects.equals(sendTask.getMessageId(), messageId)) {
+                        MessageTemplate messageTemplate = sendTask.getMessageTemplate();
+                        //如果不是待确认状态就退出本次消息确认
+                        if (!MSG_SENDING.equals(messageTemplate.getMsgStatus())) {
+                            return;
+                        }
+                        //修改发送状态
+                        if (StrUtil.isNotBlank(sendId)) {
+                            //成功
+                            messageTemplate.setMsgStatus(MSG_SUCCESS);
+                            messageTemplate.setSendLogs("消息发送成功,返回信息:" + sendId);
+                            LocalDateTime now = LocalDateTime.now();
+                            sendTask.setSendEndTime(now);
+                            sendTask.setTakeTime(Duration.between(sendTask.getSendStartTime(), now).toMillis());
+                            if (TIMING.equals(messageTemplate.getPushType())) {
+                                //定时任务完成记录
+                                recordCronTaskStatus(CRON_TASK_SUCCESS, messageTemplate.getId(), sendContexts.get(i).getSender(), "消息发送成功,返回信息:" + sendId);
+                            }
+                            sendTask.setMessageTemplate(messageTemplate);
+                        } else {
+                            //失败
+                            messageTemplate.setMsgStatus(MSG_FAIL);
+                            messageTemplate.setSendLogs("消息发送失败,返回信息:" + ex.getMessage());
+                            LocalDateTime now = LocalDateTime.now();
+                            sendTask.setSendEndTime(now);
+                            sendTask.setTakeTime(Duration.between(sendTask.getSendStartTime(), now).toMillis());
+                            if (TIMING.equals(messageTemplate.getPushType())) {
+                                //定时任务冗余失败记录
+                                recordCronTaskStatus(CRON_TASK_FAIL, messageTemplate.getId(), sendContexts.get(i).getSender(), ex.getMessage());
+                            }
+                            sendTask.setMessageTemplate(messageTemplate);
+                        }
+                    }
+                }
+                //按照下标重新存进redis
+                stringRedisTemplate.opsForList().set(messageRedisKey, i, JSON.toJSONString(sendContexts.get(i)));
+            }
+        }
+
         for (SendContent sendContext : sendContexts) {
             //从当天发送任务集合中筛选出本次发送任务
             if (Objects.equals(sendContext.getSendTaskId(), sendTaskId)) {

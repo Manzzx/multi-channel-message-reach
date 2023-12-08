@@ -81,7 +81,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
     public TemplateEChartsData getTemplateEChartsData(String day, Long id) {
         //初始化数据
         initTemplateData(day, id);
-        if (this.id == null || this.id == 0){
+        if (this.id == null || this.id == 0) {
             return null;
         }
         TemplateEChartsData.ShowPanelData showPanelData = buildShowPanelData();
@@ -204,9 +204,9 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
             element.add(entry.getValue().toString());
             String s = entry.getKey().substring(0, Math.min(entry.getKey().length(), 14));
             String user;
-            if (s.length()>=14){
+            if (s.length() >= 14) {
                 user = s + "..";
-            }else {
+            } else {
                 user = s;
             }
             element.add(user);
@@ -268,7 +268,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
             wrapper.eq(MessageTemplate::getCreator, SecurityContextHolder.getUserName())
                     .orderByDesc(MessageTemplate::getUpdateTime).last("LIMIT 1");
             MessageTemplate template = messageTemplateService.getOne(wrapper);
-            if (template == null){
+            if (template == null) {
                 return;
             }
             id = template.getId();

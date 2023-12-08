@@ -16,6 +16,8 @@ import com.metax.web.mq.MqService;
 import com.metax.web.service.ISysUserService;
 import com.metax.web.util.DataUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 import static com.metax.common.core.constant.MetaxDataConstants.*;
+import static com.metax.common.core.constant.RedissonConstants.TEMPLATE_TOTAL_LOCK;
+import static com.metax.common.core.constant.RedissonConstants.USER_TOTAL_LOCK;
 
 /**
  * 发送mq处理器
@@ -41,6 +45,8 @@ public class SendMqProcess implements BusinessProcess {
     private DataUtil dataUtil;
     @Autowired
     private DelayMqService delayMqService;
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     public ProcessContent process(ProcessContent context) {
@@ -58,7 +64,7 @@ public class SendMqProcess implements BusinessProcess {
         } finally {
             String messageKey = sendContext.getSendTasks().get(0).getSendMessageKey();
             stringRedisTemplate.opsForList()
-                    .leftPush(messageKey, JSON.toJSONString(sendContext));
+                    .rightPush(messageKey, JSON.toJSONString(sendContext));
             calculateNumberOfSenders(sendContext, sendContext.getSender());
             calculateNumberOfTemplate(sendContext, sendContext.getSender());
             if (TIMING.equals(sendContext.getSendTasks().get(0).getMessageTemplate().getPushType())) {
@@ -89,6 +95,7 @@ public class SendMqProcess implements BusinessProcess {
     }
 
     /**
+     * 统计当前用总发送人数
      * 存当前用户发送人数进redis
      *
      * @param sendContext
@@ -96,20 +103,27 @@ public class SendMqProcess implements BusinessProcess {
     private void calculateNumberOfSenders(SendContent sendContext, Long userId) {
         //本次任务发送总人数
         Integer sendNumber = countSendNumber(sendContext);
+        RLock lock = redissonClient.getLock(USER_TOTAL_LOCK + sendContext.getSender());
+        try {
+            lock.lock();
+            //计算该用户总发送次数
+            String count = stringRedisTemplate.opsForValue().get(MetaxDataConstants.USER_SEND_NUMBER + userId);
 
-        //计算该用户总发送次数
-        String count = stringRedisTemplate.opsForValue().get(MetaxDataConstants.USER_SEND_NUMBER + userId);
-
-        Integer number;
-        //判断是否是第一次发送
-        if (Objects.nonNull(count) && !PUSH_NOW.equals(count)) {
-            //非第一次
-            number = Integer.parseInt(count);
-            number += sendNumber;
-        } else {
-            number = sendNumber;
+            Integer number;
+            //判断是否是第一次发送
+            if (Objects.nonNull(count) && !PUSH_NOW.equals(count)) {
+                //非第一次
+                number = Integer.parseInt(count);
+                number += sendNumber;
+            } else {
+                number = sendNumber;
+            }
+            stringRedisTemplate.opsForValue().set(MetaxDataConstants.USER_SEND_NUMBER + userId, String.valueOf(number));
+        } catch (Exception e) {
+            log.error("统计用户总发送人数异常:{}",e.getMessage());
+        } finally {
+            lock.unlock();
         }
-        stringRedisTemplate.opsForValue().set(MetaxDataConstants.USER_SEND_NUMBER + userId, String.valueOf(number));
     }
 
     /**
@@ -118,31 +132,39 @@ public class SendMqProcess implements BusinessProcess {
     private void calculateNumberOfTemplate(SendContent sendContext, Long userId) {
         //多少个接受者就是多少次
         Integer sendNumber = countSendNumber(sendContext);
-        //获取本次任务消息模板id
-        Long messageId = sendContext.getSendTasks().get(0).getMessageTemplate().getId();
-        Map<Object, Object> entries = stringRedisTemplate.opsForHash()
-                .entries(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId);
+        RLock lock = redissonClient.getLock(TEMPLATE_TOTAL_LOCK + sendContext.getSender());
+        try {
+            lock.lock();
+            //获取本次任务消息模板id
+            Long messageId = sendContext.getSendTasks().get(0).getMessageTemplate().getId();
+            Map<Object, Object> entries = stringRedisTemplate.opsForHash()
+                    .entries(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId);
 
-        //判断是否是第一次发送
-        if (CollectionUtil.isNotEmpty(entries)) {
-            //获得该模板被发送次数
+            //判断是否是第一次发送
+            if (CollectionUtil.isNotEmpty(entries)) {
+                //获得该模板被发送次数
 
-            Integer number = 0;
-            //判断该模板是否是第一次发送
-            if (entries.get(messageId.toString()) != null) {
-                number = Integer.valueOf(entries.get(messageId.toString()).toString());
-                number += sendNumber;
+                Integer number = 0;
+                //判断该模板是否是第一次发送
+                if (entries.get(messageId.toString()) != null) {
+                    number = Integer.valueOf(entries.get(messageId.toString()).toString());
+                    number += sendNumber;
+                } else {
+                    number = sendNumber;
+                }
+                entries.put(messageId.toString(), number.toString());
+                stringRedisTemplate.opsForHash()
+                        .putAll(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId, entries);
             } else {
-                number = sendNumber;
+                Map<String, String> map = new HashMap<>();
+                map.put(messageId.toString(), sendNumber.toString());
+                stringRedisTemplate.opsForHash()
+                        .putAll(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId, map);
             }
-            entries.put(messageId.toString(), number.toString());
-            stringRedisTemplate.opsForHash()
-                    .putAll(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId, entries);
-        } else {
-            Map<String, String> map = new HashMap<>();
-            map.put(messageId.toString(), sendNumber.toString());
-            stringRedisTemplate.opsForHash()
-                    .putAll(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId, map);
+        } catch (Exception e) {
+            log.error("统计模板总发送人数异常:{}",e.getMessage());
+        } finally {
+            lock.unlock();
         }
 
 

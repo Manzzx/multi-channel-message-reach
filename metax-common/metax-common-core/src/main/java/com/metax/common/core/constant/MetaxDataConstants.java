@@ -204,7 +204,7 @@ public class MetaxDataConstants {
     /**
      * 邮件
      */
-    public final static String NOTING_EMAIL = "hanabi123456@163.com";
+    public final static String NOTING_EMAIL = "hanabizzx7880@163.com";
 
     /**
      * 定时人群文件接受者表头名称
@@ -255,17 +255,5 @@ public class MetaxDataConstants {
 
     public static final String TALK_KEY = APPLICATION_NAME+"talk:";
 
-    /**
-     * 分布式锁 ： metax:lock:sendContentId 粒度为锁住同一发送任务
-     */
-    public static final String SEND_CONTENT_LOCK = APPLICATION_NAME + "lock:";
-    /**
-     * 获取锁最大等待时间
-     */
-    public static final Long TRY_LOCK_WAIT_TIME = 10L;
-    /**
-     * 获取锁最大
-     */
-    public static final Long LOCK_TIME = 10L;
 
 }
