@@ -204,7 +204,7 @@ public class MetaxDataConstants {
     /**
      * 邮件
      */
-    public final static String NOTING_EMAIL = "hanabizzx7880@163.com";
+    public final static String NOTING_EMAIL = "hanabi12345@163.com";
 
     /**
      * 定时人群文件接受者表头名称
