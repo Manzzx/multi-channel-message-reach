@@ -140,7 +140,9 @@ Sentinel、SpringbootAdmin（visual模块）
 
 3. 新增渠道消息模板（插入HTML片段需要在nacos配置文件设置模板接口的XXS排除路径）
 
- 
+
+
+如有问题可联系：hanabizzx@outlook.com
 
 # 参与贡献
 
