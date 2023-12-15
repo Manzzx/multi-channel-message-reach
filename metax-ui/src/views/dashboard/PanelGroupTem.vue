@@ -7,7 +7,7 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            模板总送达用户
+            模板总下发用户
           </div>
           <count-to :start-val="0" :end-val="totalNum" :duration="2600" class="card-panel-num"/>
         </div>
@@ -20,7 +20,7 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            模板今日送达用户
+            模板今日下发用户
           </div>
           <count-to :start-val="0" :end-val="dayNum" :duration="3000" class="card-panel-num"/>
         </div>
@@ -46,7 +46,7 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            今日推送用户占比
+            今日下发用户占比
           </div>
           <count-to :start-val="0" :end-val="pushPercentage" :duration="3000" class="card-panel-num"/>%
         </div>
