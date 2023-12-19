@@ -317,19 +317,19 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
                     //统计指定日期发送成功、失败情况和发送中
                     if (MSG_SUCCESS.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
                         this.success += sendTaskInfo.getReceivers().size();
-                        computeListData(successList, sendTaskInfo.getSendStartTime());
+                        computeListData(successList, sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
                         //统计模板的当天发送情况
                         templateStatus.put(MSG_SUCCESS, templateStatus.get(MSG_SUCCESS) + sendTaskInfo.getReceivers().size());
                     }
                     if (MSG_FAIL.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
                         this.fail += sendTaskInfo.getReceivers().size();
-                        computeListData(failList, sendTaskInfo.getSendStartTime());
+                        computeListData(failList, sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
                         //统计模板的当天发送情况
                         templateStatus.put(MSG_FAIL, templateStatus.get(MSG_FAIL) + sendTaskInfo.getReceivers().size());
                     }
                     if (MSG_SENDING.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
                         this.sending += sendTaskInfo.getReceivers().size();
-                        computeListData(sendingList, sendTaskInfo.getSendStartTime());
+                        computeListData(sendingList, sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
                         //统计模板的当天发送情况
                         templateStatus.put(MSG_SENDING, templateStatus.get(MSG_SENDING) + sendTaskInfo.getReceivers().size());
                     }
@@ -408,28 +408,28 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      * @param map
      * @param time
      */
-    private void computeListData(Map<Integer, Integer> map, LocalDateTime time) {
+    private void computeListData(Map<Integer, Integer> map, LocalDateTime time, int num) {
         int hour = time.getHour();
         int interval = hour / 4; // 将24小时分成6个4小时的时间段
 
         switch (interval) {
             case 0:
-                map.put(0, map.get(0) + 1);
+                map.put(0, map.get(0) + num);
                 break;
             case 1:
-                map.put(1, map.get(1) + 1);
+                map.put(1, map.get(1) + num);
                 break;
             case 2:
-                map.put(2, map.get(2) + 1);
+                map.put(2, map.get(2) + num);
                 break;
             case 3:
-                map.put(3, map.get(3) + 1);
+                map.put(3, map.get(3) + num);
                 break;
             case 4:
-                map.put(4, map.get(4) + 1);
+                map.put(4, map.get(4) + num);
                 break;
             case 5:
-                map.put(5, map.get(5) + 1);
+                map.put(5, map.get(5) + num);
                 break;
         }
     }
