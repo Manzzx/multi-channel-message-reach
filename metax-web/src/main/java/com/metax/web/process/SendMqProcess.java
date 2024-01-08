@@ -75,7 +75,7 @@ public class SendMqProcess implements BusinessProcess {
             calculateNumberOfTemplate(sendContext, sendContext.getSender());
             if (TIMING.equals(sendContext.getSendTasks().get(0).getMessageTemplate().getPushType())) {
                 //如果是定时任务启动发送阶段
-                dataUtil.recordCronTaskStatus(CRON_TASK_SENDING, sendContext.getSendTasks().get(0).getMessageTemplate().getId(), sendContext.getSender(), "消息任务今入发送阶段，正在推送消息...");
+                dataUtil.recordCronTaskStatus(CRON_TASK_SENDING, sendContext.getSendTasks().get(0).getMessageTemplate().getId(), sendContext.getSender(), "消息任务进入发送阶段，正在推送消息...");
             }
             context.setResponse(AjaxResult.success("消息发送成功"));
         }
