@@ -148,7 +148,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         }
         //记录定时任务状态
         CronTaskCords taskCords = CronTaskCords.builder().expectPushTime(messageTemplate.getExpectPushTime())
-                .status(CRON_TASK_STARTING).startTime(LocalDateTime.now()).log("任务开始").messageTemplateId(id)
+                .status(CRON_TASK_STARTING).startTime(LocalDateTime.now()).log("消息任务已开始，正在等待调度...").messageTemplateId(id)
                 .sender(sender).sendChannel(dataUtil.channelMapping().get(messageTemplate.getSendChannel())).build();
         stringRedisTemplate.opsForValue().set(CRON_TASK_STATUS_KEY + sender + ":" + id, JSON.toJSONString(taskCords));
         return AjaxResult.success();

@@ -2,6 +2,7 @@ package com.metax.web.mq.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,6 +16,7 @@ import java.util.Map;
  * @DateTime: 2023/11/17 9:51
  **/
 @Configuration
+@ConditionalOnProperty(name = "metax.rabbitmq.delayQueues.enabled", havingValue = "true")
 public class RabbitMqConfig {
 
     /**

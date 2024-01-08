@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,9 @@ import static com.metax.common.core.constant.RedissonConstants.USER_TOTAL_LOCK;
 @Service
 @Slf4j
 public class SendMqProcess implements BusinessProcess {
+
+    @Value("${metax.rabbitmq.delayQueues.enabled}")
+    private String delayQueues;
 
     @Autowired
     private MqService mqService;
@@ -55,7 +59,9 @@ public class SendMqProcess implements BusinessProcess {
         try {
             String sendContextJson = JSON.toJSONString(sendContext);
             mqService.send(sendContextJson, sendContext.getSendCode());
-            sendXdl(sendContext);
+            if (delayQueues.equals("true")) {
+                sendXdl(sendContext);
+            }
         } catch (Exception e) {
             sendContext.setSendLogs("errorMsg:" + e.getMessage());
             context.setIsNeedBreak(true);
@@ -69,7 +75,7 @@ public class SendMqProcess implements BusinessProcess {
             calculateNumberOfTemplate(sendContext, sendContext.getSender());
             if (TIMING.equals(sendContext.getSendTasks().get(0).getMessageTemplate().getPushType())) {
                 //如果是定时任务启动发送阶段
-                dataUtil.recordCronTaskStatus(CRON_TASK_SENDING, sendContext.getSendTasks().get(0).getMessageTemplate().getId(), sendContext.getSender(), "发送中");
+                dataUtil.recordCronTaskStatus(CRON_TASK_SENDING, sendContext.getSendTasks().get(0).getMessageTemplate().getId(), sendContext.getSender(), "消息任务今入发送阶段，正在推送消息...");
             }
             context.setResponse(AjaxResult.success("消息发送成功"));
         }

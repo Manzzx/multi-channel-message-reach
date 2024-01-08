@@ -56,7 +56,7 @@ public class CronTask {
     public void cronTaskExecutor() {
         String jobParam = XxlJobHelper.getJobParam();
         List<String> params = StrUtil.split(jobParam, SEPARATOR);
-        dataUtil.recordCronTaskStatus(CRON_TASK_SCHEDULING, Long.valueOf(params.get(0)), Long.valueOf(params.get(1)), "启动中");
+        dataUtil.recordCronTaskStatus(CRON_TASK_SCHEDULING, Long.valueOf(params.get(0)), Long.valueOf(params.get(1)), "消息任务进入启动阶段，正在校验消息任务...");
 
         try {
             taskQueue.put(() -> cronTaskHandler.Handler(Long.valueOf(params.get(0)), Long.valueOf(params.get(1))));

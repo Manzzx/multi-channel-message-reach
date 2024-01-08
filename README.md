@@ -38,8 +38,8 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
     - 支持文本、HTML类型
     - 支持网络附件和本地附件推送
 + **短信**
-    - 阿里云：支持手机号回执拉取
-    - 腾讯云：支持手机号回执拉取、账号回执拉取
+    - 阿里云：支持手机号短信回执拉取
+    - 腾讯云：支持手机号短信回执拉取、账号回执拉取
 + **APP通知栏**
 + **微信公众号**
     - 模板消息
@@ -112,11 +112,10 @@ Sentinel、SpringbootAdmin（visual模块）
 
 1. docker安装redis、rabbitMQ、mysql、nacos
 
-2. 需要给调用xxl-job的接口加上@PermissionLimit(limit=false)开放权限
+2. 需要给调用xxl-job的接口加上@PermissionLimit(limit=false)开放权限(xxl-job下载地址：https://gitee.com/xuxueli0323/xxl-job?_from=gitee_search)
 
 3. 修改各服务组件地址,各服务的bootstrap.yml文件和Nacos配置文件
 
-4. 延迟队列需要安装RabbitMQ延迟队列插件才能生效（如果延迟队列不生效可能会导致消息直接超时处理）
 
 #### 前端
 1. **进入项目目录**
@@ -138,9 +137,9 @@ Sentinel、SpringbootAdmin（visual模块）
 
 2. 配置个人渠道账号信息
 
-3. 新增渠道消息模板（插入HTML片段需要在nacos配置文件设置模板接口的XXS排除路径）
+3. 新增渠道消息模板
 
-
+4. 发送/启动模板
 
 如有问题可联系：hanabizzx@outlook.com
 

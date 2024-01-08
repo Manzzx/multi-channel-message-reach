@@ -160,7 +160,8 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
 
     @Override
     public boolean updateAudit(Long id, Integer status) {
-        return lambdaUpdate().eq(MessageTemplate::getId, id).set(MessageTemplate::getAuditStatus, status).update();
+        return lambdaUpdate().eq(MessageTemplate::getId, id)
+                .set(MessageTemplate::getAuditStatus, status).update();
     }
 
     @Override
