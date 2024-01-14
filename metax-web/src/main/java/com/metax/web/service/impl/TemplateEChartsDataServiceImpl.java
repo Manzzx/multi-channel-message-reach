@@ -298,6 +298,8 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         this.success = 0;
         this.sending = 0;
         this.fail = 0;
+        this.templateStatus = initTemplateStatus();
+
         if (CollectionUtil.isEmpty(list)) {
             return;
         }
@@ -307,9 +309,6 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         //存放当天下发人数
         AtomicReference<Integer> sendTotalOfDay = new AtomicReference<>();
         sendTotalOfDay.set(0);
-
-
-        this.templateStatus = initTemplateStatus();
 
         for (SendContent sendContent : sendContents) {
             sendContent.getSendTasks().forEach(sendTaskInfo -> {
