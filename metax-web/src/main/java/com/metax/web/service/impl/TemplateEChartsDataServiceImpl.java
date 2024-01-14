@@ -290,6 +290,14 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      */
     public void processingData(String redisKey, Long id, String day) {
         List<String> list = stringRedisTemplate.opsForList().range(redisKey, 0, -1);
+        //清除缓存
+        successList = createMap();
+        sendingList = createMap();
+        failList = createMap();
+
+        this.success = 0;
+        this.sending = 0;
+        this.fail = 0;
         if (CollectionUtil.isEmpty(list)) {
             return;
         }
@@ -299,13 +307,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         //存放当天下发人数
         AtomicReference<Integer> sendTotalOfDay = new AtomicReference<>();
         sendTotalOfDay.set(0);
-        successList = createMap();
-        sendingList = createMap();
-        failList = createMap();
 
-        this.success = 0;
-        this.sending = 0;
-        this.fail = 0;
 
         this.templateStatus = initTemplateStatus();
 
