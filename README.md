@@ -142,7 +142,7 @@ Sentinel、SpringbootAdmin（visual模块）
 
 4. 发送/启动模板
 
-如有问题可联系：hanabizzx@outlook.com
+本项目仅供学习参考，如对你有帮助就给个star吧~
 
 # 参与贡献
 
