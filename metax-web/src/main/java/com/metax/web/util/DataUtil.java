@@ -274,53 +274,6 @@ public class DataUtil {
                 stringRedisTemplate.opsForList().set(messageRedisKey, i, JSON.toJSONString(sendContexts.get(i)));
             }
         }
-
-        for (SendContent sendContext : sendContexts) {
-            //从当天发送任务集合中筛选出本次发送任务
-            if (Objects.equals(sendContext.getSendTaskId(), sendTaskId)) {
-                //提前获取出本次任务的下标
-                int sendContextIndex = sendContexts.indexOf(sendContext);
-                //获取当前子任务
-                List<SendTaskInfo> sendTasks = sendContext.getSendTasks();
-                for (SendTaskInfo sendTask : sendTasks) {
-                    if (Objects.equals(sendTask.getMessageId(), messageId)) {
-                        MessageTemplate messageTemplate = sendTask.getMessageTemplate();
-                        //如果不是待确认状态就退出本次消息确认
-                        if (!MSG_SENDING.equals(messageTemplate.getMsgStatus())) {
-                            return;
-                        }
-                        //修改发送状态
-                        if (StrUtil.isNotBlank(sendId)) {
-                            //成功
-                            messageTemplate.setMsgStatus(MSG_SUCCESS);
-                            messageTemplate.setSendLogs("消息发送成功,返回信息:" + sendId);
-                            LocalDateTime now = LocalDateTime.now();
-                            sendTask.setSendEndTime(now);
-                            sendTask.setTakeTime(Duration.between(sendTask.getSendStartTime(), now).toMillis());
-                            if (TIMING.equals(messageTemplate.getPushType())) {
-                                //定时任务完成记录
-                                recordCronTaskStatus(CRON_TASK_SUCCESS, messageTemplate.getId(), sendContext.getSender(), "消息发送成功,返回信息:" + sendId);
-                            }
-                            sendTask.setMessageTemplate(messageTemplate);
-                        } else {
-                            //失败
-                            messageTemplate.setMsgStatus(MSG_FAIL);
-                            messageTemplate.setSendLogs("消息发送失败,返回信息:" + ex.getMessage());
-                            LocalDateTime now = LocalDateTime.now();
-                            sendTask.setSendEndTime(now);
-                            sendTask.setTakeTime(Duration.between(sendTask.getSendStartTime(), now).toMillis());
-                            if (TIMING.equals(messageTemplate.getPushType())) {
-                                //定时任务冗余失败记录
-                                recordCronTaskStatus(CRON_TASK_FAIL, messageTemplate.getId(), sendContext.getSender(), ex.getMessage());
-                            }
-                            sendTask.setMessageTemplate(messageTemplate);
-                        }
-                    }
-                }
-                //重新存进redis
-                stringRedisTemplate.opsForList().set(messageRedisKey, sendContextIndex, JSON.toJSONString(sendContext));
-            }
-        }
     }
 
     /**
