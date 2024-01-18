@@ -258,7 +258,7 @@ public class DataServiceImpl implements IDataService {
                 sendTotalOfDay.set(sendTotalOfDay.get() + sendTaskInfo.getReceivers().size());
                 //统计当天每一个渠道发送次数
                 Integer sendChannel = sendTaskInfo.getMessageTemplate().getSendChannel();
-                dataUtil.channelCount.put(sendChannel, dataUtil.channelCount.get(sendChannel) + 1);
+                dataUtil.channelCount.put(sendChannel, dataUtil.channelCount.get(sendChannel) + sendTaskInfo.getReceivers().size());
                 //将各数字类型进行映射转换
                 dataVo.setMsgStatus(dataUtil.statusMapping.get(sendTaskInfo.getMessageTemplate().getMsgStatus()));
                 dataVo.setExpectPushTime(StrUtil.isBlank(sendTaskInfo.getMessageTemplate().getExpectPushTime()) ||
