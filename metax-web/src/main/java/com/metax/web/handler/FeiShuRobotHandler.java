@@ -5,6 +5,7 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson2.JSON;
+import com.metax.common.core.constant.FeiShuRobotConstants;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.domain.feishu.FeiShuRobotConfig;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.metax.common.core.constant.SendMessageTypeConstants.TEXT;
+import static com.metax.common.core.constant.DdingDingSendMessageTypeConstants.TEXT;
 
 /**
  * 飞书机器人handler
@@ -52,7 +53,7 @@ public class FeiShuRobotHandler extends ChannelHandler {
                 return;
             }
             dataUtil.confirmSend(result, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.sendTaskId, new Exception());
-        } catch (HttpException e) {
+        } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
             log.error("飞书自定义机器人发送异常:" + e.getMessage());
         }
@@ -69,7 +70,7 @@ public class FeiShuRobotHandler extends ChannelHandler {
     public FeiShuRobotParam buildFeiShuRobotParam(FeiShuRobotContentModel contentModel) {
         FeiShuRobotParam.ContentDTO content = null;
         String msgType=null;
-        if (TEXT.equals(contentModel.getMsgType())) {
+        if (FeiShuRobotConstants.TEXT.equals(contentModel.getMsgType())) {
             content = FeiShuRobotParam.ContentDTO.builder().text(contentModel.getText().getContent()).build();
             msgType = "text";
         }

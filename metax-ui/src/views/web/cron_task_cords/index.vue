@@ -61,6 +61,9 @@
           <div v-if="scope.row.sendChannel === 'feiShuRobot'">
             <p>飞书机器人</p>
           </div>
+          <div v-if="scope.row.sendChannel === 'enterpriseWeChatRobot'">
+            <p>企业微信机器人</p>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="期望发送时间" align="center" prop="expectPushTime" min-width="100%">
@@ -226,7 +229,7 @@ export default {
         title: '监听中',
         message: '正在实时监控定时模板消息...',
         type: 'success',
-        duration: 0
+        duration: 5000
       });
       document.addEventListener('visibilitychange', this.handleVisibilityChange);
     },

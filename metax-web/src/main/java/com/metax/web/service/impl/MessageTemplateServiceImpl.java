@@ -1,5 +1,6 @@
 package com.metax.web.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
@@ -9,26 +10,29 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.metax.common.core.constant.WeChatConstants;
 import com.metax.common.core.context.SecurityContextHolder;
 import com.metax.web.domain.MessageTemplate;
 import com.metax.web.domain.dingding.DingDingRobotParam;
+import com.metax.web.domain.weChat.EnterpriseWeChatRobotParam;
 import com.metax.web.dto.MessageTemplateDto;
-import com.metax.web.dto.content.DingDingRobotContentModel;
-import com.metax.web.dto.content.FeiShuRobotContentModel;
-import com.metax.web.dto.content.PushContentModel;
-import com.metax.web.dto.content.WeChatServiceAccountContentModel;
+import com.metax.web.dto.content.*;
 import com.metax.web.mapper.MessageTemplateMapper;
 import com.metax.web.util.DataUtil;
+import com.metax.web.util.RedisKeyUtil;
 import com.metax.web.xxljob.service.XxlJobService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import com.metax.web.service.IMessageTemplateService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
-import static com.metax.common.core.constant.SendMessageTypeConstants.*;
+import static com.metax.common.core.constant.DdingDingSendMessageTypeConstants.*;
 import static com.metax.common.core.constant.GeTuiConstants.*;
 import static com.metax.common.core.constant.GeTuiConstants.CLICK_TYPE_PAYLOAD_CUSTOM;
 import static com.metax.common.core.constant.MetaxDataConstants.*;
@@ -41,13 +45,15 @@ import static com.metax.common.core.constant.MetaxDataConstants.*;
  */
 @Service
 public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMapper, MessageTemplate> implements IMessageTemplateService {
+
     @Autowired
     private MessageTemplateMapper messageTemplateMapper;
     @Autowired
     private XxlJobService xxlJobService;
     @Autowired
     private DataUtil dataUtil;
-
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
 
     @Override
@@ -62,13 +68,16 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
         if (dingDongRobotPreCheck(messageTemplate)) {
             return false;
         }
-        if (weChatServiceAccountPreCheck(messageTemplate)){
+        if (weChatServiceAccountPreCheck(messageTemplate)) {
             return false;
         }
-        if (pushPreCheck(messageTemplate)){
+        if (pushPreCheck(messageTemplate)) {
             return false;
         }
-        if (feiShuRobotPreCheck(messageTemplate)){
+        if (feiShuRobotPreCheck(messageTemplate)) {
+            return false;
+        }
+        if (enterpriseWeChatRobotPreCheck(messageTemplate)) {
             return false;
         }
         if (Objects.equals(messageTemplate.getPushType(), TIMING)) {
@@ -86,7 +95,25 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
      */
     @Override
     public boolean edit(MessageTemplate messageTemplate) {
+        if (messageTemplate.getSendAccount() == null || messageTemplate.getSendAccount() == 0) {
+            return false;
+        }
+        if (messageTemplate.getSendChannel() == null || messageTemplate.getSendChannel() == 0) {
+            return false;
+        }
         if (dingDongRobotPreCheck(messageTemplate)) {
+            return false;
+        }
+        if (weChatServiceAccountPreCheck(messageTemplate)) {
+            return false;
+        }
+        if (pushPreCheck(messageTemplate)) {
+            return false;
+        }
+        if (feiShuRobotPreCheck(messageTemplate)) {
+            return false;
+        }
+        if (enterpriseWeChatRobotPreCheck(messageTemplate)) {
             return false;
         }
         return updateById(messageTemplate);
@@ -103,6 +130,10 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
             if (Objects.nonNull(messageTemplate.getCronCrowdPath())) {
                 //同时删除文件
                 FileUtil.del(messageTemplate.getCronCrowdPath());
+            }
+            if (messageTemplate.getPushType().equals(TIMING)) {
+                //删除定时模板链路追踪记录
+                stringRedisTemplate.delete(RedisKeyUtil.getCronTaskCordsRedisKey(SecurityContextHolder.getUserId(), messageTemplate.getId().toString()));
             }
         }
         return removeByIds(Arrays.asList(ids));
@@ -122,12 +153,12 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
             lqw.like(MessageTemplate::getName, messageTemplate.getName());
         }
         if (StrUtil.isNotBlank(messageTemplate.getSendChannel())) {
-            lqw.eq(MessageTemplate::getSendChannel,dataUtil.channelMappingToInteger().get(messageTemplate.getSendChannel()));
+            lqw.eq(MessageTemplate::getSendChannel, dataUtil.channelMappingToInteger().get(messageTemplate.getSendChannel()));
         }
-        if (StrUtil.isNotBlank(messageTemplate.getCreateTime())){
-            lqw.like(MessageTemplate::getCreateTime,messageTemplate.getCreateTime());
+        if (StrUtil.isNotBlank(messageTemplate.getCreateTime())) {
+            lqw.like(MessageTemplate::getCreateTime, messageTemplate.getCreateTime());
         }
-        lqw.orderByDesc(MessageTemplate::getUpdateTime).eq(MessageTemplate::getCreator,SecurityContextHolder.getUserName());
+        lqw.orderByDesc(MessageTemplate::getUpdateTime).eq(MessageTemplate::getCreator, SecurityContextHolder.getUserName());
         IPage<MessageTemplate> iPage = new Page<>(pageNum, pageSize);
         page(iPage, lqw);
         return iPage;
@@ -149,8 +180,8 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
         if (StrUtil.isNotBlank(messageTemplate.getCreator())) {
             lqw.like(MessageTemplate::getCreator, messageTemplate.getCreator());
         }
-        if (StrUtil.isNotBlank(messageTemplate.getCreateTime())){
-            lqw.like(MessageTemplate::getCreateTime,messageTemplate.getCreateTime());
+        if (StrUtil.isNotBlank(messageTemplate.getCreateTime())) {
+            lqw.like(MessageTemplate::getCreateTime, messageTemplate.getCreateTime());
         }
         lqw.orderByDesc(MessageTemplate::getUpdateTime);
         IPage<MessageTemplate> iPage = new Page<>(pageNum, pageSize);
@@ -182,6 +213,9 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
             return false;
         }
         DingDingRobotContentModel contentModel = JSON.parseObject(messageTemplate.getMsgContent(), DingDingRobotContentModel.class);
+        if (StrUtil.isBlank(contentModel.getSendType())) {
+            return true;
+        }
         if (TEXT.equals(contentModel.getSendType())) {
             //文本类型
             JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
@@ -228,22 +262,23 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
 
     /**
      * 微信服务号后端校验
+     *
      * @param messageTemplate
      * @return true 需要拦截 false 放行
      */
-    public boolean weChatServiceAccountPreCheck(MessageTemplate messageTemplate){
+    public boolean weChatServiceAccountPreCheck(MessageTemplate messageTemplate) {
         Integer sendChannel = messageTemplate.getSendChannel();
         if (!WECHAT_SERVICE_ACCOUNT.equals(sendChannel)) {
             return false;
         }
         WeChatServiceAccountContentModel contentModel = JSON.parseObject(messageTemplate.getMsgContent(), WeChatServiceAccountContentModel.class);
-        if (StrUtil.isBlank(contentModel.getTemplateId())){
+        if (StrUtil.isBlank(contentModel.getTemplateId())) {
             return true;
         }
-        if (StrUtil.isBlank(contentModel.getUrl())){
+        if (StrUtil.isBlank(contentModel.getUrl())) {
             return true;
         }
-        if (contentModel.getLinkType() == null || contentModel.getLinkType() ==0){
+        if (contentModel.getLinkType() == null || contentModel.getLinkType() == 0) {
             return true;
         }
         return false;
@@ -251,36 +286,37 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
 
     /**
      * APP通知栏后端校验
+     *
      * @param messageTemplate
      * @return true 需要拦截 false 放行
      */
-    public boolean pushPreCheck(MessageTemplate messageTemplate){
+    public boolean pushPreCheck(MessageTemplate messageTemplate) {
         Integer sendChannel = messageTemplate.getSendChannel();
         if (!PUSH.equals(sendChannel)) {
             return false;
         }
         PushContentModel contentModel = JSON.parseObject(messageTemplate.getMsgContent(), PushContentModel.class);
         String clickType = contentModel.getClickType();
-        if (StrUtil.isBlank(contentModel.getChannelLevel())){
+        if (StrUtil.isBlank(contentModel.getChannelLevel())) {
             return true;
         }
         if (CLICK_TYPE_URL.equals(clickType)) {
-            if (StrUtil.isBlank(contentModel.getUrl())){
+            if (StrUtil.isBlank(contentModel.getUrl())) {
                 return true;
             }
         }
         if (CLICK_TYPE_INTENT.equals(clickType)) {
-            if (StrUtil.isBlank(contentModel.getIntent())){
+            if (StrUtil.isBlank(contentModel.getIntent())) {
                 return true;
             }
         }
         if (CLICK_TYPE_PAYLOAD.equals(clickType)) {
-            if (StrUtil.isBlank(contentModel.getPayload())){
+            if (StrUtil.isBlank(contentModel.getPayload())) {
                 return true;
             }
         }
         if (CLICK_TYPE_PAYLOAD_CUSTOM.equals(clickType)) {
-            if (StrUtil.isBlank(contentModel.getPayload())){
+            if (StrUtil.isBlank(contentModel.getPayload())) {
                 return true;
             }
         }
@@ -289,13 +325,76 @@ public class MessageTemplateServiceImpl extends ServiceImpl<MessageTemplateMappe
 
     /**
      * 飞书机器人后端校验
+     *
      * @param messageTemplate
-     * @return
+     * @return true 需要拦截 false 放行
      */
-    public boolean feiShuRobotPreCheck(MessageTemplate messageTemplate){
+    public boolean feiShuRobotPreCheck(MessageTemplate messageTemplate) {
+        Integer sendChannel = messageTemplate.getSendChannel();
+        if (!FEI_SHU_ROBOT.equals(sendChannel)) {
+            return false;
+        }
         FeiShuRobotContentModel contentModel = JSON.parseObject(messageTemplate.getMsgContent(), FeiShuRobotContentModel.class);
-        if (TEXT.equals(contentModel.getMsgType())){
-            if (StrUtil.isBlank(contentModel.getText().getContent())){
+        if (StrUtil.isBlank(contentModel.getMsgType())) {
+            return true;
+        }
+        if (TEXT.equals(contentModel.getMsgType())) {
+            if (StrUtil.isBlank(contentModel.getText().getContent())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 企业微信机器人后端校验
+     *
+     * @param messageTemplate
+     * @return true 需要拦截 false 放行
+     */
+    public boolean enterpriseWeChatRobotPreCheck(MessageTemplate messageTemplate) {
+        Integer sendChannel = messageTemplate.getSendChannel();
+        if (!ENTERPRISE_WECHAT_ROBOT.equals(sendChannel)) {
+            return false;
+        }
+        EnterpriseWeChatRobotContentModel contentModel = JSON.parseObject(messageTemplate.getMsgContent(), EnterpriseWeChatRobotContentModel.class);
+        if (StrUtil.isBlank(contentModel.getSendType())) {
+            return true;
+        }
+        JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
+        if (WeChatConstants.TEXT.equals(contentModel.getSendType())) {
+            EnterpriseWeChatRobotParam.TextDTO textDTO = jsonObject.toJavaObject(EnterpriseWeChatRobotParam.TextDTO.class);
+            if (StrUtil.isBlank(textDTO.getContent())) {
+                return true;
+            }
+        }
+        if (WeChatConstants.MARKDOWN.equals(contentModel.getSendType())) {
+            EnterpriseWeChatRobotParam.MarkdownDTO markdownDTO = jsonObject.toJavaObject(EnterpriseWeChatRobotParam.MarkdownDTO.class);
+            if (StrUtil.isBlank(markdownDTO.getContent())) {
+                return true;
+            }
+        }
+        if (WeChatConstants.IMAGE.equals(contentModel.getSendType())) {
+            EnterpriseWeChatRobotParam.ImageDTO imageDTO = jsonObject.toJavaObject(EnterpriseWeChatRobotParam.ImageDTO.class);
+            if (StrUtil.isBlank(imageDTO.getBase64()) || StrUtil.isBlank(imageDTO.getMd5())) {
+                return true;
+            }
+        }
+        if (WeChatConstants.NEWS.equals(contentModel.getSendType())) {
+            EnterpriseWeChatRobotParam.NewsDTO newsDTO = jsonObject.toJavaObject(EnterpriseWeChatRobotParam.NewsDTO.class);
+            if (CollectionUtil.isEmpty(newsDTO.getArticles())) {
+                return true;
+            }
+        }
+        if (WeChatConstants.FILE.equals(contentModel.getSendType())) {
+            EnterpriseWeChatRobotParam.FileDTO fileDTO = jsonObject.toJavaObject(EnterpriseWeChatRobotParam.FileDTO.class);
+            if (StrUtil.isBlank(fileDTO.getMedia_id())) {
+                return true;
+            }
+        }
+        if (WeChatConstants.VOICE.equals(contentModel.getSendType())) {
+            EnterpriseWeChatRobotParam.VoiceDTO voiceDTO = jsonObject.toJavaObject(EnterpriseWeChatRobotParam.VoiceDTO.class);
+            if (StrUtil.isBlank(voiceDTO.getMedia_id())) {
                 return true;
             }
         }

@@ -162,6 +162,9 @@
           <div v-if="scope.row.sendChannel === 'feiShuRobot'">
             <p>飞书机器人</p>
           </div>
+          <div v-if="scope.row.sendChannel === 'enterpriseWeChatRobot'">
+            <p>企业微信机器人</p>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="发送账号 " align="center" prop="sendAccount"/>
@@ -246,10 +249,12 @@
           </el-radio>
           <el-radio v-model="form.sendChannel" label="60" @change="getChannel_accounts(form.sendChannel)">飞书机器人
           </el-radio>
+          <el-radio v-model="form.sendChannel" label="70" @change="getChannel_accounts(form.sendChannel)">企业微信机器人
+          </el-radio>
         </el-form-item>
         <div v-if="form.sendChannel !== '40'">
           <el-form-item label="账号配置">
-            <el-select v-model="form.sendAccount" placeholder="请选择">
+            <el-select v-model="form.sendAccount" placeholder="请选择" @change="setUploadObjs(form.sendAccount)">
               <el-option
                 v-for="item in sendAccounts"
                 :key="item.id"
@@ -312,7 +317,8 @@
         <!--        短信-->
         <div v-if="form.sendChannel === '20'">
           <el-form-item label="短信内容">
-            <el-input v-model="sms.content" type="textarea" placeholder="短信内容 占位符用${var}表示 注意要与配置账号的短信模板占位符变量名一致 并且只发送变量数据"/>
+            <el-input v-model="sms.content" type="textarea"
+                      placeholder="短信内容 占位符用${var}表示 注意要与配置账号的短信模板占位符变量名一致 并且只发送变量数据"/>
           </el-form-item>
           <el-form-item label="链接">
             <el-input v-model="sms.url" placeholder="可选 短信链接 占位符用${url}表示 注意要与配置账号的短信模板占位符变量名一致 主要用于长链接转短链"/>
@@ -464,7 +470,7 @@
           <div v-if="dingDingRobot.sendType === '50'">
             <div>
               <el-button icon="el-icon-circle-plus-outline" type="primary" @click="cardsshowPopup">添加/修改图文数组</el-button>
-              <el-button icon="el-icon-circle-close" type="danger" @click="cardsresetForm('btnsaddJsonForm')">清除图文数组
+              <el-button icon="el-icon-circle-close" type="danger" @click="cardsresetForm('cardsaddJsonForm')">清除图文数组
               </el-button>
             </div>
             <p></p>
@@ -472,7 +478,7 @@
               <el-input type="textarea" v-model="feedCard.links" placeholder="请先点击添加图文数组数据" :readonly="true"/>
             </el-form-item>
 
-            <!-- actionCard卡片数组赋值-->
+            <!-- feedCard卡片数组赋值-->
             <template>
               <div>
                 <el-dialog
@@ -633,7 +639,6 @@
           </el-form-item>
         </div>
 
-
         <!--        飞书机器人-->
         <div v-if="form.sendChannel === '60'">
           <el-form-item label="发送类型">
@@ -644,6 +649,226 @@
             <el-form-item label="飞书内容">
               <el-input v-model="feiShuRobot.text.content" type="textarea" placeholder="飞书内容 占位符用${var}表示"/>
             </el-form-item>
+          </div>
+        </div>
+
+        <!--        企业微信机器人-->
+        <div v-if="form.sendChannel === '70'">
+          <el-form-item label="发送类型">
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="10">文本类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="20">markdown类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="30">图片类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="40">图文类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="50">文件类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="60">语音类型</el-radio>
+          </el-form-item>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '10'">
+            <el-form-item label="文本内容">
+              <el-input type="textarea" v-model="eWCRText.content" placeholder="文本内容 最长不超过2048个字节 支持使用<@userid>扩展语法来@群成员 占位符用${var}表示"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '20'">
+            <el-form-item label="内容">
+              <el-input type="textarea" v-model="eWCRMarkdown.content"
+                        placeholder="markdown内容 最长不超过4096个字节 目前只支持markdown语法的子集 支持使用<@userid>扩展语法来@群成员 占位符用${var}表示"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '30'">
+            <el-form-item label="base64">
+              <el-input type="textarea" v-model="eWCRImage.base64" placeholder="图片内容的base64编码 占位符用${var}表示"/>
+            </el-form-item>
+            <el-form-item label="md5">
+              <el-input type="textarea" v-model="eWCRImage.md5" placeholder="图片内容（base64编码前）的md5值 占位符用${var}表示"/>
+            </el-form-item>
+            <p>图片转 BASE64 编码网址：https://www.jyshare.com/front-end/59/</p>
+            <p>文件md5加密网址：http://www.metools.info/other/o21.html</p>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '40'">
+            <div>
+              <el-button icon="el-icon-circle-plus-outline" type="primary" @click="eWCRCardsshowPopup">添加/修改图文数组
+              </el-button>
+              <el-button icon="el-icon-circle-close" type="danger" @click="eWCRCardsresetForm('eWCRCardsaddJsonForm')">
+                清除图文数组
+              </el-button>
+            </div>
+            <p></p>
+            <el-form-item label="图文数组">
+              <el-input type="textarea" v-model="eWCRNews.articles" placeholder="请先点击添加图文数组数据" :readonly="true"/>
+            </el-form-item>
+
+            <!-- 企业微信机器人图文数组赋值-->
+            <template>
+              <div>
+                <el-dialog
+                  class="comn_dialog"
+                  title="添加数据"
+                  :visible.sync="eWCRCardsaddJsonVisible"
+                  width="800px"
+                  top="23vh"
+                  append-to-body
+                >
+                  <el-button type="primary" @click="eWCRCardsaddTableItem">添加</el-button>
+                  <el-button type="danger" @click="eWCRCardsdelTableItem">删除</el-button>
+
+                  <el-form
+                    :model="eWCRCardsaddJsonForm"
+                    ref="eWCRCardsaddJsonForm"
+                    :rules="eWCRCardsaddJsonForm.addJsonRules"
+                    :inline="true"
+                    label-width="108px"
+                  >
+                    <el-table
+                      :data="eWCRCardsaddJsonForm.params"
+                      style="width: 100%"
+                      border
+                      @selection-change="eWCRCardsaddJsonSelectionChange"
+                    >
+                      <el-table-column type="selection" width="55" align="center">
+                      </el-table-column>
+
+                      <el-table-column align="center">
+                        <template slot="header" slot-scope="scope">
+                          <span style="color:#2d65dc;">标题</span>
+                          <i style="color:#F56C6C;">*</i>
+                        </template>
+                        <template slot-scope="scope">
+                          <el-form-item
+                            :prop="'params.' + scope.$index + '.title'"
+                            :rules="eWCRCardsaddJsonForm.addJsonRules.title"
+                          >
+                            <el-input
+                              type="text"
+                              v-model="scope.row.title"
+                              autocomplete="off"
+                              placeholder="支持占位符${var}"
+                            ></el-input>
+                          </el-form-item>
+                        </template>
+                      </el-table-column>
+                      <el-table-column align="center">
+                        <template slot="header" slot-scope="scope">
+                          <span style="color:#2d65dc;">描述</span>
+                          <i style="color:#F56C6C;">*</i>
+                        </template>
+                        <template slot-scope="scope">
+                          <el-form-item
+                            :prop="'params.' + scope.$index + '.description'"
+                            :rules="eWCRCardsaddJsonForm.addJsonRules.description"
+                          >
+                            <el-input
+                              type="text"
+                              v-model="scope.row.description"
+                              autocomplete="off"
+                              placeholder="支持占位符${var}"
+                            ></el-input>
+                          </el-form-item>
+                        </template>
+                      </el-table-column>
+                      <el-table-column align="center">
+                        <template slot="header" slot-scope="scope">
+                          <span style="color:#2d65dc;">跳转链接</span>
+                          <i style="color:#F56C6C;">*</i>
+                        </template>
+                        <template slot-scope="scope">
+                          <el-form-item
+                            :prop="'params.' + scope.$index + '.url'"
+                            :rules="eWCRCardsaddJsonForm.addJsonRules.url"
+                          >
+                            <el-input
+                              type="text"
+                              v-model="scope.row.url"
+                              autocomplete="off"
+                              placeholder="支持占位符${var}"
+                            ></el-input>
+                          </el-form-item>
+                        </template>
+                      </el-table-column>
+
+                      <el-table-column align="center">
+                        <template slot="header" slot-scope="scope">
+                          <span style="color:#2d65dc;">图片链接</span>
+                          <i style="color:#F56C6C;">*</i>
+                        </template>
+                        <template slot-scope="scope">
+                          <el-form-item
+                            :prop="'params.' + scope.$index + '.picurl'"
+                            :rules="eWCRCardsaddJsonForm.addJsonRules.picurl"
+                          >
+                            <el-input
+                              type="text"
+                              v-model="scope.row.picurl"
+                              autocomplete="off"
+                              placeholder="支持占位符${var}"
+                            ></el-input>
+                          </el-form-item>
+                        </template>
+                      </el-table-column>
+
+                    </el-table>
+                  </el-form>
+                  <span slot="footer" class="dialog-footer">
+                      <el-button @click="eWCRCardsresetAddJsonPopup">取 消</el-button>
+                      <el-button type="primary" @click="eWCRCardssubmitAddJsonPopup">确定</el-button>
+                    </span>
+                </el-dialog>
+              </div>
+            </template>
+
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '50'">
+            <div v-if="form.sendAccount!=null">
+              <el-upload
+                ref="upload"
+                class="upload-container"
+                :action="uploadFileMaterial"
+                :auto-upload="true"
+                name="multipartFile"
+                :with-credentials="true"
+                :data="uploadObjs"
+                :file-list="fileList"
+                :headers="headers"
+                :on-success="onUploadFileSuccess"
+
+              >
+                <el-button type="primary" size="mini" icon="el-icon-upload2">上传文件</el-button>
+                <p></p>
+              </el-upload>
+            </div>
+
+            <el-form-item label="文件id">
+              <el-input v-model="eWCRFile.media_id" placeholder="文件id 文件大小不超过20M 通过文件上传接口获取 上传成功自动返回文件id id仅三天内有效"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '60'">
+            <div v-if="form.sendAccount!=null">
+              <el-upload
+                ref="upload"
+                class="upload-container"
+                :action="uploadVoiceMaterial"
+                :auto-upload="true"
+                name="multipartFile"
+                :with-credentials="true"
+                :data="uploadObjs"
+                :file-list="fileList"
+                :headers="headers"
+                :on-success="onUploadVoiceSuccess"
+              >
+                <el-button type="primary" size="mini" icon="el-icon-upload2">上传语音</el-button>
+                <p></p>
+              </el-upload>
+            </div>
+
+            <el-form-item label="语音id">
+              <el-input v-model="eWCRVoice.media_id"
+                        placeholder="语音文件id 文件大小不超过2M 播放长度不超过60s 仅支持AMR格式 上传成功自动返回语音文件id id仅三天内有效"/>
+            </el-form-item>
+            <p>音频转amr网址：https://www.aconvert.com/cn/format/amr/</p>
           </div>
         </div>
       </el-form>
@@ -709,6 +934,14 @@
         </el-form>
       </div>
 
+      <div v-if="ChannelReceiverType ==='70'">
+        <el-form ref="sendForm" :model="sendForm" :rules="enterpriseWeChatRobotRules" label-width="80px">
+          <el-form-item label="接受者" prop="receivers" required>
+            <el-input v-model="sendForm.receivers" placeholder="仅文本类型支持输入@对象手机号/userid,@all表示提醒所有人,其余任意,多个用英文”,“隔开,相同会去重"></el-input>
+          </el-form-item>
+        </el-form>
+      </div>
+
       <template>
         <div>
           <div v-if="tableColumns !==undefined && tableColumns.length > 0">
@@ -716,9 +949,9 @@
             <el-button type="danger" @click="resetSendForm('myForm')">重置数据</el-button>
             <p></p>
             <el-input readonly v-model="FormInAddPopup.dataSourceJson" type="textarea" placeholder="数据预览(一组数据对应一个接受者)"/>
-<!--            <h3>-->
-<!--              数据预览(一组数据对应一个接受者):<span>{{ FormInAddPopup.dataSourceJson }}</span>-->
-<!--            </h3>-->
+            <!--            <h3>-->
+            <!--              数据预览(一组数据对应一个接受者):<span>{{ FormInAddPopup.dataSourceJson }}</span>-->
+            <!--            </h3>-->
           </div>
           <el-dialog
             class="comn_dialog"
@@ -783,6 +1016,7 @@ import {
 } from "@/api/web/message_template";
 import Link from "@/layout/components/Sidebar/Link";
 import {listWxTemplate_account} from "@/api/web/channel_account";
+import {getToken} from "@/utils/auth";
 
 export default {
   name: "Message_template",
@@ -825,6 +1059,35 @@ export default {
         sendChannel: null,
         // creator: null,
       },
+
+      uploadFileMaterial: process.env.VUE_APP_BASE_API + "/web/material/uploadFile", // 上传文件服务器地址
+      uploadVoiceMaterial: process.env.VUE_APP_BASE_API + "/web/material/uploadVoice", // 上传语音服务器地址
+
+      //企业微信图文数据
+      eWCRCardsaddJsonVisible: false,
+      eWCRCardsaddJsonMultiple: [],
+      eWCRCardsFormInAddPopup: {
+        eWCRCardsdataSourceJson: "" // 获取到的dataJson,显示为 [{name:"",value:""},{name:"",value:""}] 的格式
+      },
+      eWCRCardstabItemId: 1, // 表格数据的 id
+      eWCRCardsaddJsonForm: {
+        params: [],
+        addJsonRules: {
+          title: [
+            {required: true, message: "请输入标题", trigger: "blur"}
+          ],
+          description: [
+            {required: true, message: "请输入描述", trigger: "blur"}
+          ],
+          url: [
+            {required: true, message: "请输入跳转链接", trigger: "blur"}
+          ],
+          picurl: [
+            {required: true, message: "请输入图片链接", trigger: "blur"}
+          ]
+        }
+      },
+
       //cards数据
       cardsaddJsonVisible: false,
       cardsaddJsonMultiple: [],
@@ -920,12 +1183,37 @@ export default {
         intent: "",
         payload: ""
       },
+      //飞书机器人数据类型
       feiShuRobot: {
         msgType: "",
         //文本类型
         text: {
           content: ""
         }
+      },
+      //企业微信机器人数据类型
+      enterpriseWeChatRobot: {
+        sendType: "",
+        content: ""
+      },
+      eWCRText: {
+        content: ""
+      },
+      eWCRMarkdown: {
+        content: ""
+      },
+      eWCRImage: {
+        base64: "",
+        md5: ""
+      },
+      eWCRNews: {
+        articles: ""
+      },
+      eWCRFile: {
+        media_id: ""
+      },
+      eWCRVoice: {
+        media_id: ""
       },
       weChatTemplates: [],
       // 表单参数
@@ -968,8 +1256,12 @@ export default {
           {require: true, validator: this.validatePushs, trigger: 'blur'}
         ],
       },
-
       feiShuRobotRules: {
+        receivers: [
+          {require: true, message: "接受者为空", trigger: 'blur'}
+        ],
+      },
+      enterpriseWeChatRobotRules: {
         receivers: [
           {require: true, message: "接受者为空", trigger: 'blur'}
         ],
@@ -1017,13 +1309,40 @@ export default {
           }
         ],
         addJsonRules: {}
-      }
+      },
+      uploadObjs: {},
+      fileList: [],
+      headers: {
+        Authorization: "Bearer " + getToken(),
+      },
     };
   },
   created() {
     this.getList();
   },
   methods: {
+    setUploadObjs(sendAccount) {
+      this.uploadObjs = {
+        sendAccount: sendAccount
+      };
+    },
+    onUploadFileSuccess(res) {
+      if (res.code !== 200) {
+        this.$message.error(res.msg)
+      } else {
+        this.eWCRFile.media_id = res.msg
+        this.$message.success("上传成功!已返回文件id")
+      }
+    },
+    onUploadVoiceSuccess(res) {
+      if (res.code !== 200) {
+        this.$message.error(res.msg)
+      } else {
+        this.eWCRVoice.media_id = res.msg
+        this.$message.success("上传成功!已返回语音文件id")
+      }
+    },
+
     beforeCancel() {
       this.$confirm('是否关闭此页面？', '系统提示', {
         confirmButtonText: '确定',
@@ -1031,7 +1350,8 @@ export default {
         type: 'warning'
       }).then(() => {
         this.open = false
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
 
     beforeSendCancel() {
@@ -1041,7 +1361,8 @@ export default {
         type: 'warning'
       }).then(() => {
         this.openSend = false
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
 
     clear2(text1, text2) {
@@ -1068,6 +1389,72 @@ export default {
       listWxTemplate_account(id).then(response => {
         this.weChatTemplates = response.data
       })
+    },
+
+    // 企业微信机器人图文数据相关方法
+    eWCRCardsresetForm(formName) {
+      this.eWCRCardsFormInAddPopup.eWCRCardsdataSourceJson = "";
+      this.$set(this.eWCRCardsaddJsonForm, "params", [{
+        title: "",
+        description: "",
+        url: "",
+        picurl: ""
+      }]);
+      this.eWCRNews.articles = ""
+    },
+    eWCRCardsshowPopup() {
+      this.eWCRCardsaddJsonVisible = true;
+    },
+    eWCRCardsaddJsonSelectionChange(val) {
+      this.eWCRCardsaddJsonMultiple = val;
+    },
+    eWCRCardsresetAddJsonPopup() {
+      this.eWCRCardsaddJsonVisible = false;
+    },
+    eWCRCardssubmitAddJsonPopup() {
+      //保存 固定值
+      if (this.eWCRCardsaddJsonMultiple.length > 0) {
+        this.$refs["eWCRCardsaddJsonForm"].validate(valid => {
+          if (valid) {
+            let result = [];
+            this.eWCRCardsaddJsonMultiple.map(val => {
+              // this.$delete(val, "tabItemId"); // 删除tabItemId属性
+              result.push(val);
+            });
+            result.length ? (result = JSON.stringify(result)) : (result = "");
+            this.eWCRCardsFormInAddPopup.eWCRCardsdataSourceJson = result;
+            this.eWCRNews.articles = result;
+            this.eWCRCardsaddJsonVisible = false;
+          } else {
+            return false;
+          }
+        });
+      } else {
+        this.$message.warning("请选择要保存的数据");
+      }
+    },
+    eWCRCardsaddTableItem() {
+      this.eWCRCardstabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
+      this.eWCRCardsaddJsonForm.params.push({
+        tabItemId: this.eWCRCardstabItemId
+      });
+    },
+
+    eWCRCardsdelTableItem() {
+      // 确认删除
+      if (this.eWCRCardsaddJsonMultiple.length > 0) {
+        let arrs = [];
+        let ids = this.eWCRCardsaddJsonMultiple.map(val => val.tabItemId); //拿到选中的数据id,
+        this.eWCRCardsaddJsonForm.params.forEach(item => {
+          if (!ids.includes(item.tabItemId)) {
+            // 当id在params中，表示数据被选中，该将其删除，即将不被选中的保留
+            arrs.push(item);
+          }
+        });
+        this.eWCRCardsaddJsonForm.params = arrs;
+      } else {
+        this.$message.warning("请选择要删除的数据");
+      }
     },
 
     // cards数据相关方法
@@ -1098,7 +1485,7 @@ export default {
           if (valid) {
             let result = [];
             this.cardsaddJsonMultiple.map(val => {
-              this.$delete(val, "cardstabItemId"); // 删除tabItemId属性
+              // this.$delete(val, "tabItemId"); // 删除tabItemId属性
               result.push(val);
             });
             result.length ? (result = JSON.stringify(result)) : (result = "");
@@ -1116,9 +1503,7 @@ export default {
     cardsaddTableItem() {
       this.cardstabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
       this.cardsaddJsonForm.params.push({
-        title: "",
-        messageURL: "",
-        picURL: ""
+        tabItemId: this.cardstabItemId
       });
     },
 
@@ -1126,7 +1511,7 @@ export default {
       // 确认删除
       if (this.cardsaddJsonMultiple.length > 0) {
         let arrs = [];
-        let ids = this.cardsaddJsonMultiple.map(val => val.cardstabItemId); //拿到选中的数据id,
+        let ids = this.cardsaddJsonMultiple.map(val => val.tabItemId); //拿到选中的数据id,
         this.cardsaddJsonForm.params.forEach(item => {
           if (!ids.includes(item.tabItemId)) {
             // 当id在params中，表示数据被选中，该将其删除，即将不被选中的保留
@@ -1153,7 +1538,7 @@ export default {
       this.btnsaddJsonVisible = true;
     },
     btnsaddJsonSelectionChange(val) {
-      this.btnsaddJsonMultiple = val;
+      this.btnsaddJsonMultiple = val
     },
     btnsresetAddJsonPopup() {
       //关闭 固定值弹窗
@@ -1167,7 +1552,7 @@ export default {
           if (valid) {
             let result = [];
             this.btnsaddJsonMultiple.map(val => {
-              this.$delete(val, "btnstabItemId"); // 删除tabItemId属性
+              // this.$delete(val, "tabItemId"); // 删除tabItemId属性
               result.push(val);
             });
             result.length ? (result = JSON.stringify(result)) : (result = "");
@@ -1185,9 +1570,7 @@ export default {
     btnsaddTableItem() {
       this.btnstabItemId = "T" + this.RndNum(6); //生成以T开头的七位随机数
       this.btnsaddJsonForm.params.push({
-        title: "",
-        actionURL: "",
-        // tabItemId: this.btnstabItemId
+        tabItemId: this.btnstabItemId
       });
     },
 
@@ -1195,7 +1578,7 @@ export default {
       // 确认删除
       if (this.btnsaddJsonMultiple.length > 0) {
         let arrs = [];
-        let ids = this.btnsaddJsonMultiple.map(val => val.btnstabItemId); //拿到选中的数据id,
+        let ids = this.btnsaddJsonMultiple.map(val => val.tabItemId); //拿到选中的数据id,
         this.btnsaddJsonForm.params.forEach(item => {
           if (!ids.includes(item.tabItemId)) {
             // 当id在params中，表示数据被选中，该将其删除，即将不被选中的保留
@@ -1340,8 +1723,10 @@ export default {
         channel = 40
       } else if (row.sendChannel === "push") {
         channel = 50
-      }else if (row.sendChannel === "feiShuRobot") {
+      } else if (row.sendChannel === "feiShuRobot") {
         channel = 60
+      } else if (row.sendChannel === "enterpriseWeChatRobot") {
+        channel = 70
       }
       this.ChannelReceiverType = channel.toString()
       this.sendForm.sendChannel = channel
@@ -1510,8 +1895,7 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
-    /** 新增按钮操作 */
-    handleAdd() {
+    resetData() {
       this.isShowTem = true
       this.reset();
       this.sms.content = ""
@@ -1535,7 +1919,17 @@ export default {
       this.weChatServiceAccount.templateId = ""
       this.weChatServiceAccount.url = ""
 
-
+      this.eWCRText.content = ""
+      this.eWCRMarkdown.content = ""
+      this.eWCRImage.base64 = ""
+      this.eWCRImage.md5 = ""
+      this.eWCRNews.articles = ""
+      this.eWCRFile.media_id = ""
+      this.eWCRVoice.media_id = ""
+    },
+    /** 新增按钮操作 */
+    handleAdd() {
+      this.resetData()
       this.open = true;
       this.title = "添加消息模板";
     },
@@ -1544,6 +1938,7 @@ export default {
       this.reset();
       this.btnsaddJsonForm.params = []
       this.cardsaddJsonForm.params = []
+      this.eWCRCardsaddJsonForm.params = []
       const id = row.id || this.ids
       getMessage_template(id).then(response => {
         this.form = response.data;
@@ -1566,12 +1961,16 @@ export default {
           this.push = JSON.parse(this.form.msgContent)
         } else if (this.form.sendChannel === '60') {
           this.feiShuRobot = JSON.parse(this.form.msgContent)
+        } else if (this.form.sendChannel === '70') {
+          this.enterpriseWeChatRobot = JSON.parse(this.form.msgContent)
+          this.enterpriseWeChatRobotDataForShow()
         }
         this.open = true;
         this.title = "查看消息模板";
       });
     },
     handleUpdate(row) {
+      this.resetData
       this.isShowTem = true
       this.doHandleUpdate(row)
     },
@@ -1580,6 +1979,7 @@ export default {
       this.reset();
       this.btnsaddJsonForm.params = []
       this.cardsaddJsonForm.params = []
+      this.eWCRCardsaddJsonForm.params = []
       const id = row.id || this.ids
       getMessage_template(id).then(response => {
         this.form = response.data;
@@ -1602,6 +2002,9 @@ export default {
           this.push = JSON.parse(this.form.msgContent)
         } else if (this.form.sendChannel === '60') {
           this.feiShuRobot = JSON.parse(this.form.msgContent)
+        } else if (this.form.sendChannel === '70') {
+          this.enterpriseWeChatRobot = JSON.parse(this.form.msgContent)
+          this.enterpriseWeChatRobotDataForShow()
         }
         this.open = true;
         this.title = "修改消息模板";
@@ -1681,6 +2084,15 @@ export default {
             if (this.form.sendChannel === '60') {
               this.$set(this.form, "msgContent", JSON.stringify(this.feiShuRobot))
             }
+            if (this.form.sendChannel === '70') {
+              this.enterpriseWeChatRobotDataForAdd()
+              if (this.enterpriseWeChatRobot.sendType === '40') {
+                if (!this.eWCRNews.articles || this.eWCRNews.articles.length <= 0) {
+                  this.$modal.alertError("图文数组为空")
+                  return
+                }
+              }
+            }
             updateMessage_template(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -1719,6 +2131,15 @@ export default {
             }
             if (this.form.sendChannel === '60') {
               this.$set(this.form, "msgContent", JSON.stringify(this.feiShuRobot))
+            }
+            if (this.form.sendChannel === '70') {
+              this.enterpriseWeChatRobotDataForAdd()
+              if (this.enterpriseWeChatRobot.sendType === '40') {
+                if (!this.eWCRNews.articles || this.eWCRNews.articles.length <= 0) {
+                  this.$modal.alertError("图文数组为空")
+                  return
+                }
+              }
             }
             addMessage_template(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
@@ -1783,6 +2204,74 @@ export default {
 
     },
 
+    /**
+     * 赋值到企业微信机器人最终发送表单
+     */
+    enterpriseWeChatRobotDataForAdd() {
+      if (this.enterpriseWeChatRobot.sendType === '10') {
+        //文本类型
+        this.$set(this.enterpriseWeChatRobot, "content", this.eWCRText)
+      }
+      if (this.enterpriseWeChatRobot.sendType === '20') {
+        //MarkDown类型
+        this.$set(this.enterpriseWeChatRobot, "content", this.eWCRMarkdown)
+      }
+      if (this.enterpriseWeChatRobot.sendType === '30') {
+        //图片类型
+        this.$set(this.enterpriseWeChatRobot, "content", this.eWCRImage)
+      }
+      if (this.enterpriseWeChatRobot.sendType === '40') {
+        //图文类型
+        this.$set(this.enterpriseWeChatRobot, "content", this.eWCRNews)
+      }
+      if (this.enterpriseWeChatRobot.sendType === '50') {
+        //file类型
+        this.$set(this.enterpriseWeChatRobot, "content", this.eWCRFile)
+      }
+      if (this.enterpriseWeChatRobot.sendType === '60') {
+        //feedCard类型
+        this.$set(this.enterpriseWeChatRobot, "content", this.eWCRVoice)
+      }
+      this.$set(this.form, "msgContent", JSON.stringify(this.enterpriseWeChatRobot))
+
+    },
+
+    enterpriseWeChatRobotDataForShow() {
+      if (this.enterpriseWeChatRobot.sendType === '10') {
+        this.eWCRText = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '20') {
+        this.eWCRMarkdown = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '30') {
+        this.eWCRImage = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '40') {
+        //图文类型
+        this.eWCRNews = this.enterpriseWeChatRobot.content
+        const arr = JSON.parse(this.eWCRNews.articles || '[]')
+        for (let i = 0; i < arr.length; i++) {
+          const column = {
+            title: arr[i].title,
+            description: arr[i].description,
+            url: arr[i].url,
+            picurl: arr[i].picurl,
+            tabItemId: "T" + this.RndNum(6) //生成以T开头的七位随机数
+          };
+          this.eWCRCardsaddJsonForm.params.push(column);
+        }
+      }
+      if (this.enterpriseWeChatRobot.sendType === '50') {
+        this.eWCRFile = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '60') {
+        this.eWCRVoice = this.enterpriseWeChatRobot.content
+      }
+      //赋值上传文件/语音额外参数
+      this.uploadObjs = {
+        sendAccount: this.form.sendAccount
+      };
+    },
 
     dingDingRobotDataForShow() {
       if (this.dingDingRobot.sendType === '10') {
@@ -1804,9 +2293,11 @@ export default {
         for (let i = 0; i < arr.length; i++) {
           const column = {
             title: arr[i].title, // 列的标签
-            actionURL: arr[i].actionURL // 列的数据属性
+            actionURL: arr[i].actionURL, // 列的数据属性
+            tabItemId: "T" + this.RndNum(6) //生成以T开头的七位随机数
           };
           this.btnsaddJsonForm.params.push(column);
+
         }
       }
       if (this.dingDingRobot.sendType === '50') {
@@ -1817,7 +2308,8 @@ export default {
           const column = {
             title: arr[i].title, // 列的标签
             messageURL: arr[i].messageURL, // 列的数据属性
-            picURL: arr[i].picURL
+            picURL: arr[i].picURL,
+            tabItemId: "T" + this.RndNum(6) //生成以T开头的七位随机数
           };
           this.cardsaddJsonForm.params.push(column);
         }

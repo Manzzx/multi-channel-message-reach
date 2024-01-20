@@ -108,7 +108,7 @@ public class DataServiceImpl implements IDataService {
      * @return
      */
     @Override
-    public boolean clear(String day,Long userId) {
+    public boolean clear(String day, Long userId) {
         if (StrUtil.isBlank(day) || "null".equals(day)) {
             day = RedisKeyUtil.getCurrentDay();
         } else {
@@ -120,10 +120,11 @@ public class DataServiceImpl implements IDataService {
         }
         String redisKey = RedisKeyUtil.getMessageRedisKey(userId, day);
         Boolean delete = stringRedisTemplate.delete(redisKey);
+        Boolean delChannel = stringRedisTemplate.delete(RedisKeyUtil.getSendChannelCountRedisKey(userId, day));
         if (Objects.isNull(delete)) {
             return false;
         }
-        return delete.booleanValue();
+        return delete.booleanValue() && delChannel.booleanValue();
     }
 
     /**
@@ -150,10 +151,14 @@ public class DataServiceImpl implements IDataService {
                 cords.addAll(allCronTaskCords);
             }
         }
-
+        int start = (pageNum - 1) * pageSize;
+        //取数据结束下标和集合大小之间最小的值
+        int end = Math.min(start + pageSize, cords.size());
+        //end是开区间
+        List<CronTaskCords> list = cords.subList(start, end);
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
-        rspData.setRows(cords);
+        rspData.setRows(list);
         rspData.setMsg("查询成功");
         rspData.setTotal(cords.size());
         return rspData;

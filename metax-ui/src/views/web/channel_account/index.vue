@@ -128,6 +128,7 @@
           <el-radio v-model="form.sendChannel" label="40">微信公众号</el-radio>
           <el-radio v-model="form.sendChannel" label="50">APP通知栏</el-radio>
           <el-radio v-model="form.sendChannel" label="60">飞书机器人</el-radio>
+          <el-radio v-model="form.sendChannel" label="70">企业微信机器人</el-radio>
         </el-form-item>
         <div v-if="form.sendChannel === '10'">
           <el-form-item label="账号配置" prop="accountConfig">
@@ -143,9 +144,9 @@
           <el-form-item label="账号配置" prop="accountConfig">
             <el-input v-model="form.accountConfig" type="textarea" placeholder="请输入内容"/>
             <p>
-              阿里云短信配置案例:{"regionId":"cn-hangzhou","accessKeyId":"LTt8JSkd6sf545derasfsfWJ","accessSecret":"kv6Jdsf5dsfsdfg34f6sdfA5iBI","templateCode":"SMS_20965498","signName":"xxx个人网站","serviceName":"alibabaCloudServiceSms"}</p>
+              阿里云短信配置案例:{"regionId":"cn-hangzhou","accessKeyId":"LTt8JSkd6sf545dsfsfWJ","accessSecret":"kv6Jdsf5dsfsdf6sdfA5iBI","templateCode":"SMS_20965498","signName":"xxx个人网站","serviceName":"alibabaCloudServiceSms"}</p>
             <p>
-              腾讯云短信配置案例:{"endpoint":"sms.tencentcloudapi.com","region":"ap-guangzhou","secretId":"AKIFG3DSfdsfsd54g54456sgsdf","secretKey":"e9awD6Umsdfdsfd5654624554fdf3dgdfg9","smsSdkAppId":"12345678","templateId":"12345678","signName":"Metax日常个人公众号","serviceName":"tencentCloudServiceSms"}</p>
+              腾讯云短信配置案例:{"endpoint":"sms.tencentcloudapi.com","region":"ap-guangzhou","secretId":"AKIFGDSfdsfsdg54456sgsdf","secretKey":"e9awD6Umsdfdsfd5654624554fdgdfg9","smsSdkAppId":"12345678","templateId":"12345678","signName":"Metax日常个人公众号","serviceName":"tencentCloudServiceSms"}</p>
           </el-form-item>
         </div>
         <div v-if="form.sendChannel === '30'">
@@ -174,6 +175,14 @@
             <el-input v-model="form.accountConfig" type="textarea" placeholder="请输入内容"/>
             <p>
               飞书机器人账号样例：{"webhook":"https://open.feishu.cn/open-apis/bot/v2/hook/d1d5686786dsdfskf-d4e1-sd54a4-bsdf361e-40sad1515sdaa4"}</p>
+          </el-form-item>
+        </div>
+
+        <div v-if="form.sendChannel === '70'">
+          <el-form-item label="账号配置" prop="accountConfig">
+            <el-input v-model="form.accountConfig" type="textarea" placeholder="请输入内容"/>
+            <p>
+              企业微信机器人账号样例：{"webhook":"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=2698bfb0-4a69-47d1-a283-dfsdfs55sdf4"}</p>
           </el-form-item>
         </div>
 
@@ -281,6 +290,9 @@ export default {
           }
           if (arr[i].sendChannel === 60){
             this.channel_accountList[i].sendChannel = "飞书机器人"
+          }
+          if (arr[i].sendChannel === 70){
+            this.channel_accountList[i].sendChannel = "企业微信机器人"
           }
         }
         this.total = response.total;

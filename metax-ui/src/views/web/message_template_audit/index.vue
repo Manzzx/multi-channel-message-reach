@@ -76,7 +76,7 @@
             <p>短信</p>
           </div>
           <div v-if="scope.row.sendChannel === 'dingDingRobot'">
-            <p>钉钉机器人</p>
+            <p>钉钉群机器人</p>
           </div>
           <div v-if="scope.row.sendChannel === 'weChatServiceAccount'">
             <p>微信公众号</p>
@@ -86,6 +86,9 @@
           </div>
           <div v-if="scope.row.sendChannel === 'feiShuRobot'">
             <p>飞书机器人</p>
+          </div>
+          <div v-if="scope.row.sendChannel === 'enterpriseWeChatRobot'">
+            <p>企业微信机器人</p>
           </div>
         </template>
       </el-table-column>
@@ -150,10 +153,10 @@
           <el-radio v-model="form.sendChannel" label="50" @change="getChannel_accounts(form.sendChannel)">APP通知栏</el-radio>
           <el-radio v-model="form.sendChannel" label="10" @change="getChannel_accounts(form.sendChannel)">邮箱</el-radio>
           <el-radio v-model="form.sendChannel" label="20" @change="getChannel_accounts(form.sendChannel)">短信</el-radio>
-          <el-radio v-model="form.sendChannel" label="40" @change="getChannel_accounts(form.sendChannel)">微信服务号</el-radio>
+          <el-radio v-model="form.sendChannel" label="40" @change="getChannel_accounts(form.sendChannel)">微信公众号</el-radio>
           <el-radio v-model="form.sendChannel" label="30" @change="getChannel_accounts(form.sendChannel)">钉钉群机器人</el-radio>
           <el-radio v-model="form.sendChannel" label="60" @change="getChannel_accounts(form.sendChannel)">飞书机器人</el-radio>
-
+          <el-radio v-model="form.sendChannel" label="70" @change="getChannel_accounts(form.sendChannel)">企业微信机器人</el-radio>
         </el-form-item>
         <div v-if="form.sendChannel !== '40'">
           <el-form-item label="账号配置">
@@ -280,204 +283,18 @@
               <el-radio v-model="actionCard.btnOrientation" label="0">按钮竖直排列</el-radio>
               <el-radio v-model="actionCard.btnOrientation" label="1">按钮横向排列</el-radio>
             </el-form-item>
-            <div>
-              <el-button icon="el-icon-circle-plus-outline" type="primary" @click="btnsshowPopup">添加/修改按钮数组</el-button>
-              <el-button icon="el-icon-circle-close" type="danger" @click="btnsresetForm('btnsaddJsonForm')">清除按钮数组
-              </el-button>
-            </div>
             <p></p>
             <el-form-item label="按钮数组">
               <el-input type="textarea" v-model="actionCard.btns" placeholder="请先点击添加按钮数组数据" :readonly="true"/>
             </el-form-item>
 
-            <!-- actionCard按钮数组赋值-->
-            <template>
-              <div>
-                <el-dialog
-                  class="comn_dialog"
-                  title="添加数据"
-                  :visible.sync="btnsaddJsonVisible"
-                  width="800px"
-                  top="23vh"
-                  append-to-body
-                >
-                  <el-button type="primary" @click="btnsaddTableItem">添加</el-button>
-                  <el-button type="danger" @click="btnsdelTableItem">删除</el-button>
-
-                  <el-form
-                    :model="btnsaddJsonForm"
-                    ref="btnsaddJsonForm"
-                    :rules="btnsaddJsonForm.addJsonRules"
-                    :inline="true"
-                    label-width="108px"
-                  >
-                    <el-table
-                      :data="btnsaddJsonForm.params"
-                      style="width: 100%"
-                      border
-                      @selection-change="btnsaddJsonSelectionChange"
-                    >
-                      <el-table-column type="selection" width="55" align="center">
-                      </el-table-column>
-
-                      <el-table-column align="center">
-                        <template slot="header" slot-scope="scope">
-                          <span style="color:#2d65dc;">标题</span>
-                          <i style="color:#F56C6C;">*</i>
-                        </template>
-                        <template slot-scope="scope">
-                          <el-form-item
-                            :prop="'params.' + scope.$index + '.title'"
-                            :rules="btnsaddJsonForm.addJsonRules.title"
-                          >
-                            <el-input
-                              type="text"
-                              v-model="scope.row.title"
-                              autocomplete="off"
-                              placeholder="支持占位符${var}"
-                            ></el-input>
-                          </el-form-item>
-                        </template>
-                      </el-table-column>
-                      <el-table-column align="center">
-                        <template slot="header" slot-scope="scope">
-                          <span style="color:#2d65dc;">跳转链接</span>
-                          <i style="color:#F56C6C;">*</i>
-                        </template>
-                        <template slot-scope="scope">
-                          <el-form-item
-                            :prop="'params.' + scope.$index + '.actionURL'"
-                            :rules="btnsaddJsonForm.addJsonRules.actionURL"
-                          >
-                            <el-input
-                              type="text"
-                              v-model="scope.row.actionURL"
-                              autocomplete="off"
-                              placeholder="支持占位符${var}"
-                            ></el-input>
-                          </el-form-item>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </el-form>
-                  <span slot="footer" class="dialog-footer">
-                    <el-button @click="btnsresetAddJsonPopup">取 消</el-button>
-                    <el-button type="primary" @click="btnssubmitAddJsonPopup">确定</el-button>
-                  </span>
-                </el-dialog>
-              </div>
-            </template>
           </div>
 
           <div v-if="dingDingRobot.sendType === '50'">
-            <div>
-              <el-button icon="el-icon-circle-plus-outline" type="primary" @click="cardsshowPopup">添加/修改图文数组</el-button>
-              <el-button icon="el-icon-circle-close" type="danger" @click="cardsresetForm('btnsaddJsonForm')">清除图文数组
-              </el-button>
-            </div>
             <p></p>
             <el-form-item label="图文数组">
               <el-input type="textarea" v-model="feedCard.links" placeholder="请先点击添加图文数组数据" :readonly="true"/>
             </el-form-item>
-
-            <!-- actionCard卡片数组赋值-->
-            <template>
-              <div>
-                <el-dialog
-                  class="comn_dialog"
-                  title="添加数据"
-                  :visible.sync="cardsaddJsonVisible"
-                  width="800px"
-                  top="23vh"
-                  append-to-body
-                >
-                  <el-button type="primary" @click="cardsaddTableItem">添加</el-button>
-                  <el-button type="danger" @click="cardsdelTableItem">删除</el-button>
-
-                  <el-form
-                    :model="cardsaddJsonForm"
-                    ref="cardsaddJsonForm"
-                    :rules="cardsaddJsonForm.addJsonRules"
-                    :inline="true"
-                    label-width="108px"
-                  >
-                    <el-table
-                      :data="cardsaddJsonForm.params"
-                      style="width: 100%"
-                      border
-                      @selection-change="cardsaddJsonSelectionChange"
-                    >
-                      <el-table-column type="selection" width="55" align="center">
-                      </el-table-column>
-
-                      <el-table-column align="center">
-                        <template slot="header" slot-scope="scope">
-                          <span style="color:#2d65dc;">标题</span>
-                          <i style="color:#F56C6C;">*</i>
-                        </template>
-                        <template slot-scope="scope">
-                          <el-form-item
-                            :prop="'params.' + scope.$index + '.title'"
-                            :rules="cardsaddJsonForm.addJsonRules.title"
-                          >
-                            <el-input
-                              type="text"
-                              v-model="scope.row.title"
-                              autocomplete="off"
-                              placeholder="支持占位符${var}"
-                            ></el-input>
-                          </el-form-item>
-                        </template>
-                      </el-table-column>
-                      <el-table-column align="center">
-                        <template slot="header" slot-scope="scope">
-                          <span style="color:#2d65dc;">跳转链接</span>
-                          <i style="color:#F56C6C;">*</i>
-                        </template>
-                        <template slot-scope="scope">
-                          <el-form-item
-                            :prop="'params.' + scope.$index + '.messageURL'"
-                            :rules="cardsaddJsonForm.addJsonRules.messageURL"
-                          >
-                            <el-input
-                              type="text"
-                              v-model="scope.row.messageURL"
-                              autocomplete="off"
-                              placeholder="支持占位符${var}"
-                            ></el-input>
-                          </el-form-item>
-                        </template>
-                      </el-table-column>
-
-                      <el-table-column align="center">
-                        <template slot="header" slot-scope="scope">
-                          <span style="color:#2d65dc;">图片链接</span>
-                          <i style="color:#F56C6C;">*</i>
-                        </template>
-                        <template slot-scope="scope">
-                          <el-form-item
-                            :prop="'params.' + scope.$index + '.picURL'"
-                            :rules="cardsaddJsonForm.addJsonRules.picURL"
-                          >
-                            <el-input
-                              type="text"
-                              v-model="scope.row.picURL"
-                              autocomplete="off"
-                              placeholder="支持占位符${var}"
-                            ></el-input>
-                          </el-form-item>
-                        </template>
-                      </el-table-column>
-
-                    </el-table>
-                  </el-form>
-                  <span slot="footer" class="dialog-footer">
-                      <el-button @click="cardsresetAddJsonPopup">取 消</el-button>
-                      <el-button type="primary" @click="cardssubmitAddJsonPopup">确定</el-button>
-                    </span>
-                </el-dialog>
-              </div>
-            </template>
 
           </div>
         </div>
@@ -554,6 +371,62 @@
 
         </div>
 
+        <!--        企业微信机器人-->
+        <div v-if="form.sendChannel === '70'">
+          <el-form-item label="发送类型">
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="10">文本类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="20">markdown类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="30">图片类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="40">图文类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="50">文件类型</el-radio>
+            <el-radio v-model="enterpriseWeChatRobot.sendType" label="60">语音类型</el-radio>
+          </el-form-item>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '10'">
+            <el-form-item label="文本内容">
+              <el-input type="textarea" v-model="eWCRText.content" placeholder="文本内容 最长不超过2048个字节 支持使用<@userid>扩展语法来@群成员 占位符用${var}表示"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '20'">
+            <el-form-item label="内容">
+              <el-input type="textarea" v-model="eWCRMarkdown.content"
+                        placeholder="markdown内容 最长不超过4096个字节 目前只支持markdown语法的子集 支持使用<@userid>扩展语法来@群成员 占位符用${var}表示"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '30'">
+            <el-form-item label="base64">
+              <el-input type="textarea" v-model="eWCRImage.base64" placeholder="图片内容的base64编码 占位符用${var}表示"/>
+            </el-form-item>
+            <el-form-item label="md5">
+              <el-input type="textarea" v-model="eWCRImage.md5" placeholder="图片内容（base64编码前）的md5值 占位符用${var}表示"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '40'">
+            <p></p>
+            <el-form-item label="图文数组">
+              <el-input type="textarea" v-model="eWCRNews.articles" placeholder="请先点击添加图文数组数据" :readonly="true"/>
+            </el-form-item>
+
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '50'">
+
+            <el-form-item label="文件id">
+              <el-input v-model="eWCRFile.media_id" placeholder="文件id 文件大小不超过20M 通过文件上传接口获取 上传成功自动返回文件id id仅三天内有效"/>
+            </el-form-item>
+          </div>
+
+          <div v-if="enterpriseWeChatRobot.sendType === '60'">
+
+            <el-form-item label="语音id">
+              <el-input v-model="eWCRVoice.media_id"
+                        placeholder="语音文件id 文件大小不超过2M 播放长度不超过60s 仅支持AMR格式 上传成功自动返回语音文件id id仅三天内有效"/>
+            </el-form-item>
+          </div>
+        </div>
       </el-form>
 
     </el-dialog>
@@ -599,48 +472,6 @@ export default {
 
       // 账号配置数组
       sendAccounts: [],
-
-      //cards数据
-      cardsaddJsonVisible: false,
-      cardsaddJsonMultiple: [],
-      cardsFormInAddPopup: {
-        cardsdataSourceJson: "" // 获取到的dataJson,显示为 [{name:"",value:""},{name:"",value:""}] 的格式
-      },
-      cardstabItemId: 1, // 表格数据的 id
-      cardsaddJsonForm: {
-        params: [],
-        addJsonRules: {
-          title: [
-            {required: true, message: "请输入标题", trigger: "blur"}
-          ],
-          messageURL: [
-            {required: true, message: "请输入跳转链接", trigger: "blur"}
-          ],
-          picURL: [
-            {required: true, message: "请输入图片链接", trigger: "blur"}
-          ]
-        }
-      },
-
-      //btns数据
-      btnsaddJsonVisible: false,
-      btnsaddJsonMultiple: [],
-      btnsFormInAddPopup: {
-        btnsdataSourceJson: "" // 获取到的dataJson,显示为 [{name:"",value:""},{name:"",value:""}] 的格式
-      },
-      btnstabItemId: 1, // 表格数据的 id
-      btnsaddJsonForm: {
-        params: [],
-        addJsonRules: {
-          title: [
-            {required: true, message: "请输入标题", trigger: "blur"}
-          ],
-          actionURL: [
-            {required: true, message: "请输入跳转链接", trigger: "blur"}
-          ]
-        }
-      },
-
       email: {
         title: "",
         content: "",
@@ -701,6 +532,30 @@ export default {
           content: ""
         },
 
+      },
+      //企业微信机器人数据类型
+      enterpriseWeChatRobot: {
+        sendType: "",
+        content: ""
+      },
+      eWCRText: {
+        content: ""
+      },
+      eWCRMarkdown: {
+        content: ""
+      },
+      eWCRImage: {
+        base64: "",
+        md5: ""
+      },
+      eWCRNews: {
+        articles: ""
+      },
+      eWCRFile: {
+        media_id: ""
+      },
+      eWCRVoice: {
+        media_id: ""
       },
       weChatTemplates: [],
       // 表单参数
@@ -778,9 +633,8 @@ export default {
     },
 
     handleShow(row) {
+      this.isShowTem = false;
       this.reset();
-      this.btnsaddJsonForm.params = []
-      this.cardsaddJsonForm.params = []
       const id = row.id || this.ids
       getMessage_template(id).then(response => {
         this.form = response.data;
@@ -797,14 +651,15 @@ export default {
         } else if (this.form.sendChannel === '30') {
           this.dingDingRobot = JSON.parse(this.form.msgContent)
           this.dingDingRobotDataForShow()
-        }else if (this.form.sendChannel === '40') {
+        } else if (this.form.sendChannel === '40') {
           this.weChatServiceAccount = JSON.parse(this.form.msgContent)
         } else if (this.form.sendChannel === '50') {
           this.push = JSON.parse(this.form.msgContent)
-        } else if (this.form.sendChannel === '60'){
+        } else if (this.form.sendChannel === '60') {
           this.feiShuRobot = JSON.parse(this.form.msgContent)
-          // let feiShuType = this.feiShuRobot.msgType.toString()
-          // this.feiShuRobot.msgType = feiShuType
+        } else if (this.form.sendChannel === '70') {
+          this.enterpriseWeChatRobot = JSON.parse(this.form.msgContent)
+          this.enterpriseWeChatRobotDataForShow()
         }
         this.open = true;
         this.title = "查看消息模板";
@@ -814,6 +669,33 @@ export default {
     /**
      * 用于显示数据
      */
+
+    enterpriseWeChatRobotDataForShow() {
+      if (this.enterpriseWeChatRobot.sendType === '10') {
+        this.eWCRText = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '20') {
+        this.eWCRMarkdown = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '30') {
+        this.eWCRImage = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '40') {
+        //图文类型
+        this.eWCRNews = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '50') {
+        this.eWCRFile = this.enterpriseWeChatRobot.content
+      }
+      if (this.enterpriseWeChatRobot.sendType === '60') {
+        this.eWCRVoice = this.enterpriseWeChatRobot.content
+      }
+      //赋值上传文件/语音额外参数
+      this.uploadObjs = {
+        sendAccount: this.form.sendAccount
+      };
+    },
+
     dingDingRobotDataForShow() {
       if (this.dingDingRobot.sendType === '10') {
         //文本类型
@@ -830,27 +712,10 @@ export default {
       if (this.dingDingRobot.sendType === '40') {
         //actionCard类型
         this.actionCard = this.dingDingRobot.content
-        const arr = JSON.parse(this.actionCard.btns || '[]')
-        for (let i = 0; i < arr.length; i++) {
-          const column = {
-            title: arr[i].title, // 列的标签
-            actionURL: arr[i].actionURL // 列的数据属性
-          };
-          this.btnsaddJsonForm.params.push(column);
-        }
       }
       if (this.dingDingRobot.sendType === '50') {
         //feedCard类型
         this.feedCard = this.dingDingRobot.content
-        const arr = JSON.parse(this.feedCard.links || '[]')
-        for (let i = 0; i < arr.length; i++) {
-          const column = {
-            title: arr[i].title, // 列的标签
-            messageURL: arr[i].messageURL, // 列的数据属性
-            picURL: arr[i].picURL
-          };
-          this.cardsaddJsonForm.params.push(column);
-        }
       }
     },
 

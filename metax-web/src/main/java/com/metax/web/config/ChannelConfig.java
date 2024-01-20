@@ -60,6 +60,7 @@ public class ChannelConfig {
         channelExpTime.put(WECHAT_SERVICE_ACCOUNT,WECHAT_SERVICE_ACCOUNT_EXPIRATION_TIME);
         channelExpTime.put(PUSH,PUSH_EXPIRATION_TIME);
         channelExpTime.put(FEI_SHU_ROBOT,FEI_SHU_ROBOT_EXPIRATION_TIME);
+        channelExpTime.put(ENTERPRISE_WECHAT_ROBOT,ENTERPRISE_WECHAT_ROBOT_TIME);
 
     }
 

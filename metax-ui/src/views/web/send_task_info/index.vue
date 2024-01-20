@@ -100,6 +100,9 @@
           <div v-if="scope.row.messageTemplate.sendChannel === 'feiShuRobot'">
             <p>飞书机器人</p>
           </div>
+          <div v-if="scope.row.messageTemplate.sendChannel === 'enterpriseWeChatRobot'">
+            <p>企业微信机器人</p>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="发送阶段开始时间" align="center" prop="sendStartTime" min-width="90%">
@@ -217,7 +220,7 @@ export default {
         title: '监听中',
         message: '正在实时监控消息...',
         type: 'success',
-        duration: 0
+        duration: 5000
       });
       document.addEventListener('visibilitychange', this.handleVisibilityChange);
     },

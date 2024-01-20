@@ -33,7 +33,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitee.com/y_project/RuoYi-Cloud.git"
+    "url": "https://gitee.com/hanabizzx/multi-channel-message-push.git"
   },
   "dependencies": {
     "@riophae/vue-treeselect": "0.4.0",

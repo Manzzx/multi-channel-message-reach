@@ -26,6 +26,8 @@ public class MetaxDataConstants {
 
     public static final Integer FEI_SHU_ROBOT = 60;
 
+    public static final Integer ENTERPRISE_WECHAT_ROBOT = 70;
+
     /**
      * handler后缀
      */
@@ -40,11 +42,11 @@ public class MetaxDataConstants {
      * 配置metax支持的消息渠道
      * SUPPORT_CHANNEL_NAME 和 SUPPORT_CHANNEL 要一一对应 如 10 -> email
      */
-    public static final String SUPPORT_CHANNEL = "10,20,30,40,50,60";
+    public static final String SUPPORT_CHANNEL = "10,20,30,40,50,60,70";
 
-    public static final String SUPPORT_CHANNEL_NAME = "email,sms,dingDingRobot,weChatServiceAccount,push,feiShuRobot";
+    public static final String SUPPORT_CHANNEL_NAME = "email,sms,dingDingRobot,weChatServiceAccount,push,feiShuRobot,enterpriseWeChatRobot";
 
-    public static final String SUPPORT_CHANNEL_CN_NAME = "邮箱,短信,钉钉群机器人,微信公众号,APP通知栏,飞书机器人";
+    public static final String SUPPORT_CHANNEL_CN_NAME = "邮箱,短信,钉钉群机器人,微信公众号,APP通知栏,飞书机器人,企业微信机器人";
 
     /**
      * 支持的第三方短信服务名称 注意 要和对应的handler前缀对应 如:AlibabaCloudServiceSmsHandler
@@ -204,7 +206,7 @@ public class MetaxDataConstants {
     /**
      * 邮件
      */
-    public final static String NOTING_EMAIL = "hanabi12345@163.com";
+    public final static String NOTING_EMAIL = "123456@163.com";
 
     /**
      * 定时人群文件接受者表头名称

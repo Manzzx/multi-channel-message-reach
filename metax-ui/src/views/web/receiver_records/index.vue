@@ -84,6 +84,9 @@
           <div v-if="scope.row.sendTask.messageTemplate.sendChannel === 'feiShuRobot'">
             <p>飞书机器人</p>
           </div>
+          <div v-if="scope.row.sendTask.messageTemplate.sendChannel === 'enterpriseWeChatRobot'">
+            <p>企业微信机器人</p>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="发送状态" align="center" min-width="50%">

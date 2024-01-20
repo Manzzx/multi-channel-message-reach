@@ -27,7 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.metax.common.core.constant.RedissonConstants.SEND_CONTENT_LOCK;
-import static com.metax.common.core.constant.SendMessageTypeConstants.*;
+import static com.metax.common.core.constant.DdingDingSendMessageTypeConstants.*;
 import static com.metax.common.core.constant.MetaxDataConstants.*;
 
 /**
@@ -274,6 +274,7 @@ public class DataUtil {
                 stringRedisTemplate.opsForList().set(messageRedisKey, i, JSON.toJSONString(sendContexts.get(i)));
             }
         }
+
     }
 
     /**

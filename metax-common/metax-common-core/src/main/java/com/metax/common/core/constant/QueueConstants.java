@@ -27,4 +27,6 @@ public class QueueConstants {
     public static final String PUSH_EXPIRATION_TIME = "30000";
 
     public static final String FEI_SHU_ROBOT_EXPIRATION_TIME = "30000";
+
+    public static final String ENTERPRISE_WECHAT_ROBOT_TIME = "30000";
 }
