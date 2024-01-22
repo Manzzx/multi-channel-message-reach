@@ -1,4 +1,5 @@
 # 多渠道消息触达平台
+详细安装教程：https://blog.csdn.net/weixin_52097397/article/details/135738516?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22135738516%22%2C%22source%22%3A%22weixin_52097397%22%7D
 
 # 介绍
 多渠道消息触达平台是一个为应用开发者提供服务的平台，旨在解决发送消息的需求。
@@ -110,6 +111,8 @@ visual模块：系统监控
 web模块：消息推送功能模块
 
 # 安装教程
+详细安装教程：https://blog.csdn.net/weixin_52097397/article/details/135738516?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22135738516%22%2C%22source%22%3A%22weixin_52097397%22%7D
+
 #### 运行必需服务
 Redis、RabbitMQ、Xxl-job、Nacos、Mysql5.7
 
