@@ -4,7 +4,7 @@ import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.domain.dingding.DingDingRobotConfig;
 import com.metax.web.util.AccountUtil;
 import com.metax.web.util.DataUtil;
-import com.metax.web.util.aliyun.DingDingRobotUtils;
+import com.metax.web.util.DingDingRobotUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
