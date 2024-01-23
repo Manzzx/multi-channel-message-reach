@@ -11,8 +11,8 @@ services:
       TZ: Asia/Shanghai
       LANG: en_US.UTF-8
       RABBITMQ_DEFAULT_VHOST: my_host  # 主机名
-      RABBITMQ_DEFAULT_USER: metax      # 登录账号
-      RABBITMQ_DEFAULT_PASS: 630204388      # 登录密码
+      RABBITMQ_DEFAULT_USER: guest      # 登录账号
+      RABBITMQ_DEFAULT_PASS: guest      # 登录密码
     volumes:                            # 数据卷挂载路径设置,将本机目录映射到容器目录
       - "/home/rabbitmq/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf"
       - "/home/rabbitmq/config/10-default-guest-user.conf:/etc/rabbitmq/conf.d/10-default-guest-user.conf"
