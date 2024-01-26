@@ -1,6 +1,5 @@
 # 多渠道消息触达平台
-详细安装教程：https://blog.csdn.net/weixin_52097397/article/details/135738516?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22135738516%22%2C%22source%22%3A%22weixin_52097397%22%7D
-觉得不错就给个`Star`吧please~
+
 # 介绍
 多渠道消息触达平台是一个为应用开发者提供服务的平台，旨在解决发送消息的需求。
 通过与消息触达平台的接口对接，开发者无需自行编写发送消息的代码，从而实现业务逻辑代码和发送消息逻辑代码的解耦。
@@ -12,7 +11,7 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
 # 项目特性
 多渠道消息触达平台具有以下特性：
 
-+ **统一提供多个消息服务渠道**：与多个第三方消息服务API进行对接，包括邮件、短信、钉钉群机器人、APP通知栏（push通知栏）、微信公众号（模板消息）、飞书机器人和企业微信机器人。
++ **统一提供多个消息服务渠道**：与多个第三方消息服务API进行对接，包括邮件、短信、钉钉群机器人、APP通知栏（push通知栏）、微信公众号（模板消息）和飞书机器人。
 + **高性能消息推送**：基于阻塞队列+消息队列+动态线程池处理消息任务，可处理大量消息任务
 + **推送灵活**：支持自定义消息内容实时、定时单个推送和批量推送
 + **数据可视化**：对每个消息模板的推送情况进行可视化图形展示
@@ -53,13 +52,6 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
     - FeedCard
 + **飞书机器人**
     - 文本
-+ **企业微信机器人**
-    - 文本类型
-    - Markdown类型
-    - 图片类型
-    - 图文类型
-    - 文件类型
-    - 语音类型
 
 # 演示图
 
@@ -111,17 +103,8 @@ visual模块：系统监控
 web模块：消息推送功能模块
 
 # 安装教程
-详细安装教程：https://blog.csdn.net/weixin_52097397/article/details/135738516?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22135738516%22%2C%22source%22%3A%22weixin_52097397%22%7D
-
 #### 运行必需服务
 Redis、RabbitMQ、Xxl-job、Nacos、Mysql5.7
-
-#### 必需运行微服务
-MetaxAuthApplication
-MetaxFileApplication
-MetaxGatewayApplication
-MetaxSystemApplication
-MetaxWebApplication
 
 #### 运行非必需服务
 Sentinel、SpringbootAdmin（visual模块）
@@ -150,8 +133,6 @@ Sentinel、SpringbootAdmin（visual模块）
 
     npm run dev
 
-项目访问地址：http://localhost:78
-
 # 使用说明
 1. 管理员账号密码：admin admin123
 
@@ -163,3 +144,19 @@ Sentinel、SpringbootAdmin（visual模块）
 
 本项目仅供学习参考，如对你有帮助就给个star吧~
 
+# 参与贡献
+
+1.  Fork 本仓库
+2.  新建 Feat_xxx 分支
+3.  提交代码
+4.  新建 Pull Request
+
+
+# 特技
+
+1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
+2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
+3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
+4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
+5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
+6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
