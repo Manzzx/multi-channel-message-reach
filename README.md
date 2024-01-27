@@ -10,7 +10,7 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
 # 项目特性
 多渠道消息触达平台具有以下特性：
 
-+ **统一提供多个消息服务渠道**：与多个第三方消息服务API进行对接，包括邮件、短信、钉钉群机器人、APP通知栏（push通知栏）、微信公众号（模板消息）和飞书机器人。
++ **统一提供多个消息服务渠道**：与多个第三方消息服务API进行对接，包括邮件、短信、钉钉群机器人、APP通知栏（push通知栏）、微信公众号（模板消息）、飞书机器人和企业微信机器人。
 + **高性能消息推送**：基于阻塞队列+消息队列+动态线程池处理消息任务，可处理大量消息任务
 + **推送灵活**：支持自定义消息内容实时、定时单个推送和批量推送
 + **数据可视化**：对每个消息模板的推送情况进行可视化图形展示
@@ -51,6 +51,14 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
     - FeedCard
 + **飞书机器人**
     - 文本
++ **企业微信机器人**
+    - 文本类型
+    - Markdown类型
+    - 图片类型
+    - 图文类型
+    - 文件类型
+    - 语音类型
+
 
 # 演示图
 
@@ -102,8 +110,17 @@ visual模块：系统监控
 web模块：消息推送功能模块
 
 # 安装教程
+详细安装教程：https://blog.csdn.net/weixin_52097397/article/details/135738516?csdn_share_tail=%7B%22type%22%3A%22blog%22%2C%22rType%22%3A%22article%22%2C%22rId%22%3A%22135738516%22%2C%22source%22%3A%22weixin_52097397%22%7D
+
 #### 运行必需服务
 Redis、RabbitMQ、Xxl-job、Nacos、Mysql5.7
+
+#### 必需运行微服务
+MetaxAuthApplication
+MetaxFileApplication
+MetaxGatewayApplication
+MetaxSystemApplication
+MetaxWebApplication
 
 #### 运行非必需服务
 Sentinel、SpringbootAdmin（visual模块）
@@ -132,13 +149,6 @@ Sentinel、SpringbootAdmin（visual模块）
 
     npm run dev
 
-# 使用说明
-1. 管理员账号密码：admin admin123
-
-2. 配置个人渠道账号信息
-
-3. 新增渠道消息模板
-
-4. 发送/启动模板
+项目访问地址：http://localhost:78
 
 本项目仅供学习参考，如对你有帮助就给个star吧~
