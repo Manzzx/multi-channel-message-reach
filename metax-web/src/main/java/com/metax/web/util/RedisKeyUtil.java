@@ -19,19 +19,14 @@ import static com.metax.common.core.constant.MetaxDataConstants.*;
  */
 public class RedisKeyUtil {
 
-    //开始时间2023-09-18 13:06:24
-    private static final long BEGIN_TIMESTAMP = 1695013584L;
+    private static final AtomicLong counter = new AtomicLong(0);
 
-    /**
-     * 作为发送的消息的唯一id
-     *
-     * @return
-     */
-    public static Long createMessageId() {
-        //生成时间戳（64位）
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime beginLocalDate = LocalDateTime.ofInstant(Instant.ofEpochSecond(BEGIN_TIMESTAMP), ZoneId.systemDefault());
-        return Duration.between(beginLocalDate, now).toMillis() + RandomUtil.randomLong(100);
+    public static long createMessageId() {
+        // 获取当前时间戳（毫秒）
+        long timestamp = System.currentTimeMillis();
+        // 生成随机数（0-999）
+        int randomPart = (int) (Math.random() * 1000);
+        return (timestamp << 10) | randomPart;
     }
 
     /**
@@ -40,9 +35,11 @@ public class RedisKeyUtil {
      * @return
      */
     public static Long createSendTaskId() {
-        //生成时间戳（64位）
-        LocalDateTime now = LocalDateTime.now();
-        return now.toEpochSecond(ZoneOffset.UTC) + RandomUtil.randomLong(100);
+        // 获取当前时间戳（毫秒）
+        long timestamp = System.currentTimeMillis();
+        // 生成随机数（0-999）
+        int randomPart = (int) (Math.random() * 1000);
+        return (timestamp << 10) | randomPart;
     }
 
     /**
