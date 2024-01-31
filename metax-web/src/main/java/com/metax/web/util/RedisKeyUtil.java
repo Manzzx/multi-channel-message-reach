@@ -26,7 +26,9 @@ public class RedisKeyUtil {
         long timestamp = System.currentTimeMillis();
         // 生成随机数（0-999）
         int randomPart = (int) (Math.random() * 1000);
-        return (timestamp << 10) | randomPart;
+        long sequence = counter.incrementAndGet();
+        // 组合时间戳、随机数和序列
+        return (timestamp << 22) | (randomPart << 12) | sequence;
     }
 
     /**
@@ -39,7 +41,9 @@ public class RedisKeyUtil {
         long timestamp = System.currentTimeMillis();
         // 生成随机数（0-999）
         int randomPart = (int) (Math.random() * 1000);
-        return (timestamp << 10) | randomPart;
+        long sequence = counter.incrementAndGet();
+        // 组合时间戳、随机数和序列
+        return (timestamp << 22) | (randomPart << 12) | sequence;
     }
 
     /**
