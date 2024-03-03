@@ -25,6 +25,8 @@ public class FileUtil {
      * @return File对象，如果读取失败则返回null
      */
     public static File getResourceAsFile(String path, String resourcePath) {
+        InputStream urlStream = null;
+        FileOutputStream fileOutputStream = null;
         try {
             URL url = null;
             File file;
@@ -33,7 +35,9 @@ public class FileUtil {
                 file = new File(path, new File(url.getPath()).getName());
                 if (!file.exists()) {
                     file.getParentFile().mkdirs();
-                    IoUtil.copy(url.openStream(), new FileOutputStream(file));
+                    urlStream = url.openStream();
+                    fileOutputStream = new FileOutputStream(file);
+                    IoUtil.copy(urlStream, fileOutputStream);
                 }
             } else {
                 file = new File(resourcePath);
@@ -45,6 +49,17 @@ public class FileUtil {
         } catch (Exception e) {
             log.error("FileUtils#getResourceAsFile failed: {}, resourcePath: {}", Throwables.getStackTraceAsString(e), resourcePath);
             return null;
+        }finally {
+            try {
+                if (urlStream != null) {
+                    IoUtil.close(urlStream);
+                }
+                if (fileOutputStream != null) {
+                    IoUtil.close(fileOutputStream);
+                }
+            } catch (Exception e) {
+                log.error("资源关闭失败: {}",Throwables.getStackTraceAsString(e));
+            }
         }
     }
 
