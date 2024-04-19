@@ -11,7 +11,7 @@ public class WeChatConstants {
 
     public static final String WECHAT_SERVICE_ACCOUNT_ACCESS_TOKEN_PREFIX = APPLICATION_NAME + "weChat_service_account";
 
-    public static final String WECHAT_SERVICE_ACCOUNT_URL_NAME = "跳转链接";
+    public static final String WECHAT_SERVICE_ACCOUNT_URL_NAME = "weChat_url";
 
     public static final String TEXT = "10";
 
