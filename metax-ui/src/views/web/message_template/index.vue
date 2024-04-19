@@ -587,7 +587,7 @@
             <!--            <el-radio v-model="weChatServiceAccount.linkType" label="20">小程序</el-radio>-->
           </el-form-item>
           <el-form-item label="跳转链接">
-            <el-input v-model="weChatServiceAccount.url" placeholder="详情链接 需要占位符请填${跳转链接} 注意只能填一个链接"/>
+            <el-input v-model="weChatServiceAccount.url" placeholder="详情链接 需要占位符请填${weChat_url} 注意只能填一个链接"/>
           </el-form-item>
         </div>
 
