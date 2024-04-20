@@ -66,14 +66,14 @@ public class PushHandler extends ChannelHandler {
                 }
             }
             if (result == null || !JSON.parseObject(result, SendPushResult.class).getCode().equals(0)) {
-                dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), new ServiceException("APP通知栏消息推送失败"));
+                dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), new ServiceException(result));
                 return;
             }
 
             dataUtil.confirmSend(result, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            log.error("APP通知栏消息推送异常:" + e.getMessage());
+            log.error("APP通知栏消息推送异常:" + e);
         }
 
 
