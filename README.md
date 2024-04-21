@@ -149,4 +149,12 @@ Sentinel、SpringbootAdmin（visual模块）
 
 项目访问地址：http://localhost:78
 
+为知识付费，想获得项目讲解答疑服务，加下面的微信请作者喝几杯奶茶即可~
+
+<table>
+    <tr>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-reach/blob/master/doc/imgs/wx.jpg"/></td>
+    </tr>
+</table>
+
 本项目仅供学习参考，如对你有帮助就给个star吧~
