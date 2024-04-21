@@ -153,7 +153,7 @@ Sentinel、SpringbootAdmin（visual模块）
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-reach/blob/master/doc/imgs/wx.jpg"/></td>
+        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/wx.jpg"/></td>
     </tr>
 </table>
 
