@@ -3,7 +3,7 @@
 多渠道消息触达平台是一个集成微信、短信、邮件、企业微信等多个消息渠道可实时和定时推送的消息推送平台，旨在解决发送消息的需求，目的是通过简单的操作就可以实现目前市面上主流消息渠道的消息推送，实现了消息发送的统一管理和多渠道的灵活选择。
 项目视频演示地址：https://www.bilibili.com/video/BV1Uk4y1S7hR/?vd_source=ea9d3688c968ba55be79c5ce3dc1c5fc
 
-github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
+Gitee地址：https://gitee.com/hanabizzx/multi-channel-message-reach
 
 # 项目特性
 多渠道消息触达平台具有以下特性：
@@ -57,36 +57,35 @@ github地址：https://github.com/Manzzx/multi-channel-message-reach/tree/master
     - 文件类型
     - 语音类型
 
-
 # 演示图
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/0.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/%E9%A6%96%E9%A1%B5.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/0.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/1.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/2.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/1.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/2.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/10.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/11.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/10.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/11.png"/></td>
     </tr>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/3.jpg"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/4.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/3.jpg"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/4.png"/></td>
     </tr>
      <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/5.jpg"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/6.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/5.jpg"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/6.png"/></td>
     </tr>
      <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/7.png"/></td>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/8.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/7.png"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/8.png"/></td>
     </tr>
      <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/9.jpg"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/9.jpg"/></td>
     </tr>
 	
 </table>
@@ -149,12 +148,23 @@ Sentinel、SpringbootAdmin（visual模块）
 
 项目访问地址：http://localhost:78
 
+# 使用说明
+1. 管理员账号密码：admin admin123
+
+2. 配置个人渠道账号信息
+
+3. 新增渠道消息模板
+
+4. 发送/启动模板
+
 为知识付费，想获得项目讲解答疑服务，加下面的微信请作者喝几杯奶茶即可~
 
 <table>
     <tr>
-        <td><img src="https://gitee.com/hanabizzx/multi-channel-message-push/raw/master/doc/imgs/wx.jpg"/></td>
+        <td><img src="https://github.com/Manzzx/multi-channel-message-reach/blob/master/doc/imgs/wx.jpg"/></td>
     </tr>
+	
 </table>
 
 本项目仅供学习参考，如对你有帮助就给个star吧~
+
