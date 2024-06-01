@@ -1,5 +1,6 @@
 package com.metax.web.handler;
 
+import com.google.common.base.Throwables;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.domain.weChat.EnterpriseWeChatRobotConfig;
 import com.metax.web.util.AccountUtil;
@@ -32,7 +33,7 @@ public class EnterpriseWeChatRobotHandler extends ChannelHandler {
             dataUtil.confirmSend(result, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.sendTaskId, new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            log.error("企业微信机器人发送异常:" + e.getMessage());
+            log.error("企业微信机器人发送异常:{}" , Throwables.getStackTraceAsString(e));
         }
 
     }

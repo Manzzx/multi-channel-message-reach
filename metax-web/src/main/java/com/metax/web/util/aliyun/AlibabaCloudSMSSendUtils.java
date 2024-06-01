@@ -42,8 +42,7 @@ public class AlibabaCloudSMSSendUtils {
 			SendSmsResponse response = client.getAcsResponse(request);
 			String code = response.getCode();
 			if (OK.equals(code)){
-				System.out.println("短信发送成功");
-				log.info(response.toString());
+				log.info("短信发送成功:"+ response);
 				//返回回执ID
 				return response.getBizId();
 			}

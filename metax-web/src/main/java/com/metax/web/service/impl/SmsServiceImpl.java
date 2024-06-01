@@ -1,11 +1,11 @@
 package com.metax.web.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.context.SecurityContextHolder;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.ChannelAccount;
@@ -37,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.metax.common.core.constant.MetaxDataConstants.*;
-import static com.metax.web.process.ReceiverCheckProcess.PHONE_REGEX_EXP;
 
 /**
  * 短信回执服务
@@ -61,7 +60,7 @@ public class SmsServiceImpl implements SmsService {
      * @return
      */
     @Override
-    public SmsRecordPage pushRecord(QuerySmsRecordDto param) {
+    public SmsRecordPage pullRecord(QuerySmsRecordDto param) {
         if (StrUtil.isBlank(param.getAccount())) {
             throw new ServiceException("发送账号不能为空");
         }
@@ -76,15 +75,15 @@ public class SmsServiceImpl implements SmsService {
                 throw new ServiceException();
             }
         } catch (Exception e) {
-            log.error("账号解析失败:{}",e.getMessage());
+            log.error("账号解析失败:{}", Throwables.getStackTraceAsString(e));
             throw new ServiceException("账号解析失败");
         }
 
         if (channelName.equals(ALIBABA_CLOUD_SERVICE_SMS_NAME)) {
-            return pushAliSmsRecord(param, jsonObject);
+            return pullAliSmsRecord(param, jsonObject);
         }
         if (channelName.equals(TENCENT_CLOUD_SERVICE_SMS_NAME)) {
-            return pushTencentSmsRecord(param, jsonObject);
+            return pullTencentSmsRecord(param, jsonObject);
         }
 
         return null;
@@ -98,7 +97,7 @@ public class SmsServiceImpl implements SmsService {
      * @param jsonObject
      * @return
      */
-    private SmsRecordPage pushTencentSmsRecord(QuerySmsRecordDto params, JSONObject jsonObject) {
+    private SmsRecordPage pullTencentSmsRecord(QuerySmsRecordDto params, JSONObject jsonObject) {
 
         SmsRecordPage recordPage = null;
         try {
@@ -154,7 +153,7 @@ public class SmsServiceImpl implements SmsService {
      * @return
      */
     @Override
-    public SmsRecordPage pushRecentRecord(QuerySmsRecordDto params) {
+    public SmsRecordPage pullRecentRecord(QuerySmsRecordDto params) {
         List<String> list = stringRedisTemplate.opsForList().range(SMS_RECORDS_KEY + SecurityContextHolder.getUserId(), 0, -1);
         if (CollectionUtil.isEmpty(list)) {
             return SmsRecordPage.builder().smsRecords(new ArrayList<>()).total(0L).build();
@@ -189,7 +188,7 @@ public class SmsServiceImpl implements SmsService {
      * @param jsonObject
      * @return
      */
-    public SmsRecordPage pushAliSmsRecord(QuerySmsRecordDto param, JSONObject jsonObject) {
+    public SmsRecordPage pullAliSmsRecord(QuerySmsRecordDto param, JSONObject jsonObject) {
         if (StrUtil.hasBlank(param.getPageNum(), param.getPageSize(), param.getPhone(), param.getSendDate())) {
             throw new ServiceException("阿里云 手机号 发送日期不能为空");
         }

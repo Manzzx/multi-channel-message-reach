@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.google.common.base.Throwables;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.dto.content.WeChatServiceAccountContentModel;
 import com.metax.web.util.AccountUtil;
@@ -26,13 +27,13 @@ import static com.metax.common.core.constant.WeChatConstants.WECHAT_SERVICE_ACCO
 
 /**
  * 微信服务号handler
+ *
  * @Author: hanabi
  * @DateTime: 2023/10/25 21:52
- *
  **/
 @Service
 @Slf4j
-public class WeChatServiceAccountHandler extends ChannelHandler{
+public class WeChatServiceAccountHandler extends ChannelHandler {
 
     @Autowired
     private AccountUtil accountUtil;
@@ -53,22 +54,23 @@ public class WeChatServiceAccountHandler extends ChannelHandler{
             dataUtil.confirmSend(msg.toString(), sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            log.error("微信服务号消息发送异常:" + e.getMessage());
+            log.error("微信服务号消息发送异常:{}", Throwables.getStackTraceAsString(e));
         }
 
     }
 
     /**
      * 组装每一个模板消息参数
+     *
      * @return
      */
-    public List<WxMpTemplateMessage> assembleParameters(Set<String> users,WeChatServiceAccountContentModel contentModel){
-        Map<String,String> map = JSON.parseObject(contentModel.getContent(), Map.class);
+    public List<WxMpTemplateMessage> assembleParameters(Set<String> users, WeChatServiceAccountContentModel contentModel) {
+        Map<String, String> map = JSON.parseObject(contentModel.getContent(), Map.class);
         //提前将跳转链接取出来
         String url = map.get(WECHAT_SERVICE_ACCOUNT_URL_NAME);
-        if (StrUtil.isBlank(url)){
-            url=contentModel.getUrl();
-        }else {
+        if (StrUtil.isBlank(url)) {
+            url = contentModel.getUrl();
+        } else {
             map.remove(WECHAT_SERVICE_ACCOUNT_URL_NAME);
         }
         List<WxMpTemplateMessage> wxMpServices = new ArrayList<>(users.size());
@@ -87,12 +89,13 @@ public class WeChatServiceAccountHandler extends ChannelHandler{
 
     /**
      * 构建模板消息里面的参数数据
+     *
      * @param map
      * @return
      */
-    public List<WxMpTemplateData> buildWxTemplateData(Map<String,String> map){
+    public List<WxMpTemplateData> buildWxTemplateData(Map<String, String> map) {
         List<WxMpTemplateData> wxMpTemplateData = new ArrayList<>(map.size());
-        map.forEach((k,v)->wxMpTemplateData.add(new WxMpTemplateData(k,v)));
+        map.forEach((k, v) -> wxMpTemplateData.add(new WxMpTemplateData(k, v)));
         return wxMpTemplateData;
     }
 

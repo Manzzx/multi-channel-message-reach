@@ -34,6 +34,7 @@ public class DataController extends BaseController {
     @GetMapping("/sendTaskInfo")
     public TableDataInfo sendTaskInfoList(int pageNum, int pageSize, String sendMessageKey) {
         SendTaskInfoVoPage page = dataService.getCurrentDayData(pageNum, pageSize, sendMessageKey, null);
+        dataService.clearThreadData();
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setRows(page.getSendTaskInfoVos());
@@ -54,6 +55,7 @@ public class DataController extends BaseController {
     @GetMapping("/sendTaskInfo/user")
     public TableDataInfo userSendTaskInfoList(int pageNum, int pageSize, String sendMessageKey, Long user) {
         SendTaskInfoVoPage page = dataService.getUserCurrentDayData(pageNum, pageSize, sendMessageKey, user);
+        dataService.clearThreadData();
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setRows(page.getSendTaskInfoVos());

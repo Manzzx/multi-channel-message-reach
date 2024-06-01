@@ -3,6 +3,7 @@ package com.metax.web.process;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.constant.MetaxDataConstants;
 import com.metax.common.core.context.SecurityContextHolder;
 import com.metax.common.core.web.domain.AjaxResult;
@@ -63,10 +64,10 @@ public class SendMqProcess implements BusinessProcess {
                 sendXdl(sendContext);
             }
         } catch (Exception e) {
-            sendContext.setSendLogs("errorMsg:" + e.getMessage());
+            sendContext.setSendLogs("errorMsg:" + Throwables.getStackTraceAsString(e));
             context.setIsNeedBreak(true);
             context.setResponse(AjaxResult.error(e.getMessage()));
-            log.error("消息发送mq异常:{}", e.getMessage());
+            log.error("消息发送mq异常:{}", Throwables.getStackTraceAsString(e));
         } finally {
             String messageKey = sendContext.getSendTasks().get(0).getSendMessageKey();
             stringRedisTemplate.opsForList()
@@ -126,7 +127,7 @@ public class SendMqProcess implements BusinessProcess {
             }
             stringRedisTemplate.opsForValue().set(MetaxDataConstants.USER_SEND_NUMBER + userId, String.valueOf(number));
         } catch (Exception e) {
-            log.error("统计用户总发送人数异常:{}",e.getMessage());
+            log.error("统计用户总发送人数异常:{}",Throwables.getStackTraceAsString(e));
         } finally {
             lock.unlock();
         }
@@ -168,7 +169,7 @@ public class SendMqProcess implements BusinessProcess {
                         .putAll(MetaxDataConstants.TEMPLATE_SEND_NUMBER_NAME + userId, map);
             }
         } catch (Exception e) {
-            log.error("统计模板总发送人数异常:{}",e.getMessage());
+            log.error("统计模板总发送人数异常:{}",Throwables.getStackTraceAsString(e));
         } finally {
             lock.unlock();
         }

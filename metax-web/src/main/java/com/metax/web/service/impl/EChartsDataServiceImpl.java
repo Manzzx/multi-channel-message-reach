@@ -9,12 +9,10 @@ import com.metax.common.core.context.SecurityContextHolder;
 import com.metax.system.api.domain.SysUser;
 import com.metax.web.domain.MessageTemplate;
 import com.metax.web.service.EChartsDataService;
-import com.metax.web.service.IDataService;
 import com.metax.web.service.IMessageTemplateService;
 import com.metax.web.service.ISysUserService;
 import com.metax.web.util.RedisKeyUtil;
 import com.metax.web.vo.echarts.IndexEChartsData;
-import com.metax.web.vo.echarts.TemplateEChartsData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -51,7 +49,7 @@ public class EChartsDataServiceImpl implements EChartsDataService {
     @Autowired
     private ISysUserService userService;
 
-    private List<MessageTemplate> messageTemplates;
+    public static final ThreadLocal<List<MessageTemplate>> TEMPLATE_LIST = ThreadLocal.withInitial(ArrayList::new);
 
     @Override
     public IndexEChartsData getIndexEChartsData(String day, Long userId) {
@@ -66,6 +64,8 @@ public class EChartsDataServiceImpl implements EChartsDataService {
         IndexEChartsData.ShowPieChartData showPieChartData = computeShowPieChartData();
         IndexEChartsData.ShowBarChartData showBarChartData = computeShowBarChartData(day,userId);
         IndexEChartsData.ShowLineChartData showLineChartData = computeShowLineChartData(day,userId);
+        dataService.clearThreadData();
+        TEMPLATE_LIST.remove();
 
         return IndexEChartsData.builder()
                 .showPanelData(showPanelData)
@@ -208,9 +208,9 @@ public class EChartsDataServiceImpl implements EChartsDataService {
     public IndexEChartsData.ShowPieChartData computeShowPieChartData() {
 
         return IndexEChartsData.ShowPieChartData.builder()
-                .success(dataService.getSuccessTem())
-                .sending(dataService.getSendingTem())
-                .fail(dataService.getFailTem()).build();
+                .success(DataServiceImpl.SUCCESS_TEM.get())
+                .sending(DataServiceImpl.SENDING_TEM.get())
+                .fail(DataServiceImpl.FAIL_TEM.get()).build();
     }
 
     /**
@@ -222,8 +222,8 @@ public class EChartsDataServiceImpl implements EChartsDataService {
         int passAudit = 0;
         int failAudit = 0;
         int waitAudit = 0;
-        if (CollectionUtil.isNotEmpty(this.messageTemplates)) {
-            for (MessageTemplate messageTemplate : messageTemplates) {
+        if (CollectionUtil.isNotEmpty(TEMPLATE_LIST.get())) {
+            for (MessageTemplate messageTemplate : TEMPLATE_LIST.get()) {
                 if (AUDIT_WAITING.equals(messageTemplate.getAuditStatus())) {
                     waitAudit += 1;
                 }
@@ -249,11 +249,10 @@ public class EChartsDataServiceImpl implements EChartsDataService {
     public IndexEChartsData.ShowPanelData computeShowPanelData(Long userId) {
         String s = stringRedisTemplate.opsForValue().get(MetaxDataConstants.USER_SEND_NUMBER + userId);
         int total = s != null ? Integer.parseInt(s) : 0;
-        int sendTotalOfDay = dataService.getSendTotalOfDayTem();
-        dataService.setSendTotalOfDayTem(0);
+        int sendTotalOfDay = DataServiceImpl.SEND_TOTAL_OF_DAY_TEM.get();
         SysUser user = dataService.getDataUtil().getSysUserService().lambdaQuery().eq(SysUser::getUserId,userId).one();
         List<MessageTemplate> templates = messageTemplateService.lambdaQuery().eq(MessageTemplate::getCreator, user.getUserName()).list();
-        this.messageTemplates = templates;
+        TEMPLATE_LIST.set(templates);
         int tempNum = templates.size();
         List<MessageTemplate> startTemp = templates.stream().filter(temp -> MSG_START.equals(temp.getMsgStatus())).collect(Collectors.toList());
         int startTempNum = startTemp.size();

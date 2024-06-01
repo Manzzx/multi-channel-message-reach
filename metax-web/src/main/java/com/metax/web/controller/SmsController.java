@@ -26,7 +26,7 @@ public class SmsController extends BaseController {
 
     @GetMapping("/pushRecord")
     public TableDataInfo pushRecord(QuerySmsRecordDto queryParams){
-        SmsRecordPage page = smsService.pushRecord(queryParams);
+        SmsRecordPage page = smsService.pullRecord(queryParams);
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setRows(page.getSmsRecords());
@@ -37,7 +37,7 @@ public class SmsController extends BaseController {
 
     @GetMapping("/recent")
     public TableDataInfo recentRecord(QuerySmsRecordDto queryParams){
-        SmsRecordPage page = smsService.pushRecentRecord(queryParams);
+        SmsRecordPage page = smsService.pullRecentRecord(queryParams);
         TableDataInfo rspData = new TableDataInfo();
         rspData.setCode(HttpStatus.SUCCESS);
         rspData.setRows(page.getSmsRecords());

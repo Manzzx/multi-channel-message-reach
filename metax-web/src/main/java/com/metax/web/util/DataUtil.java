@@ -3,6 +3,7 @@ package com.metax.web.util;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.system.api.domain.SysUser;
 import com.metax.web.config.ChannelConfig;
@@ -52,8 +53,6 @@ public class DataUtil {
     public Map<Integer, String> statusMapping;
 
     public Map<String, String> sendTypeMapping;
-    //初始化当天渠道发送次数
-    public Map<Integer, Integer> channelCount = new HashMap<>();
 
 
     /**
@@ -117,15 +116,8 @@ public class DataUtil {
         sendTypeMap.put(ACTION_CARD, ACTION_CARD_NAME);
         sendTypeMap.put(FEED_CARD, FEED_CARD_NAME);
 
-        //初始化当天渠道发送次数
-        initChannelCount();
         this.statusMapping = statusMap;
         this.sendTypeMapping = sendTypeMap;
-    }
-
-    public void initChannelCount() {
-        //初始化当天渠道发送次数
-        channelConfig.channels.forEach(channel -> channelCount.put(channel, 0));
     }
 
     /**
@@ -212,7 +204,7 @@ public class DataUtil {
             List<SendContent> sendContexts = stringConvertSendContext(list);
             updateMsgStatus(sendContexts, messageId, sendId, messageRedisKey, sendTaskId, ex);
         } catch (Exception e) {
-            log.error("发送流程出现异常", e);
+            log.error("发送流程出现异常:{}", Throwables.getStackTraceAsString(e));
         } finally {
             rLock.unlock();
         }
@@ -258,13 +250,13 @@ public class DataUtil {
                         } else {
                             //失败
                             messageTemplate.setMsgStatus(MSG_FAIL);
-                            messageTemplate.setSendLogs("消息发送失败,返回信息:" + ex.getMessage());
+                            messageTemplate.setSendLogs("消息发送失败,返回信息:" + Throwables.getStackTraceAsString(ex));
                             LocalDateTime now = LocalDateTime.now();
                             sendTask.setSendEndTime(now);
                             sendTask.setTakeTime(Duration.between(sendTask.getSendStartTime(), now).toMillis());
                             if (TIMING.equals(messageTemplate.getPushType())) {
                                 //定时任务冗余失败记录
-                                recordCronTaskStatus(CRON_TASK_FAIL, messageTemplate.getId(), sendContexts.get(i).getSender(), ex.getMessage());
+                                recordCronTaskStatus(CRON_TASK_FAIL, messageTemplate.getId(), sendContexts.get(i).getSender(),Throwables.getStackTraceAsString(ex));
                             }
                             sendTask.setMessageTemplate(messageTemplate);
                         }

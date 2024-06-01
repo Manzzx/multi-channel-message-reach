@@ -2,6 +2,7 @@ package com.metax.web.handler;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import com.google.common.base.Throwables;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.domain.centent.TencentSmsConfig;
 import com.metax.web.dto.content.SmsContentModel;
@@ -40,7 +41,7 @@ public class TencentCloudServiceSmsHandler extends ChannelHandler {
             dataUtil.confirmSend(send, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            log.error("腾讯云短信发送异常:" + e.getMessage());
+            log.error("腾讯云短信发送异常:{}" , Throwables.getStackTraceAsString(e));
         }
 
 

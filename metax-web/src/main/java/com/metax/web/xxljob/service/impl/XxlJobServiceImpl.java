@@ -143,9 +143,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         //锁定定时模板资源
         messageTemplate.setCurrentId(sender);
         //更新消息数据库状态
-        synchronized (this) {
-            messageTemplateMapper.updateById(messageTemplate);
-        }
+        messageTemplateMapper.updateById(messageTemplate);
         //记录定时任务状态
         CronTaskCords taskCords = CronTaskCords.builder().expectPushTime(messageTemplate.getExpectPushTime())
                 .status(CRON_TASK_STARTING).startTime(LocalDateTime.now()).log("消息任务已开始，正在等待调度...").messageTemplateId(id)
@@ -170,9 +168,7 @@ public class XxlJobServiceImpl implements XxlJobService {
         messageTemplate.setMsgStatus(MSG_STOP);
         //释放定时模板权限
         messageTemplate.setCurrentId(-1L);
-        synchronized (this) {
-            messageTemplateMapper.updateById(messageTemplate);
-        }
+        messageTemplateMapper.updateById(messageTemplate);
         dataUtil.recordCronTaskStatus(CRON_TASK_STOP, messageTemplate.getId(),SecurityContextHolder.getUserId(), null);
         return AjaxResult.success();
     }

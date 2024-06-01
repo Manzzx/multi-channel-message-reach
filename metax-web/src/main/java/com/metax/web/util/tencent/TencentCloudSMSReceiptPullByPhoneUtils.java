@@ -1,5 +1,6 @@
 package com.metax.web.util.tencent;
 
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.centent.QueryTencentCloudSMSReceiptParam;
 import com.metax.web.domain.centent.TencentSmsConfig;
@@ -64,7 +65,7 @@ public class TencentCloudSMSReceiptPullByPhoneUtils {
                         .sendDate(null)
                         .status(("SUCCESS".equals(status.getReportStatus()) ? CRON_TASK_SUCCESS : CRON_TASK_FAIL))
                         .template("无返回结果")
-                        .log(("SUCCESS".equals(status.getReportStatus()) ? status.getDescription() : status.getDescription() + err))
+                        .log(("SUCCESS".equals(status.getReportStatus()) ? status.getDescription() : status.getDescription().contains("NOPASS") ? status.getDescription() + err : status.getDescription()))
                         .content(status.getDescription())
                         .phone(status.getPhoneNumber())
                         .queryDate(LocalDateTime.now()).build();
@@ -75,8 +76,8 @@ public class TencentCloudSMSReceiptPullByPhoneUtils {
             smsRecordPage.setTotal(smsRecords.size());
             return smsRecordPage;
         } catch (Exception e) {
-            log.error("腾讯云短信回执手机号方式查询异常:{}", e.getMessage());
-            throw new ServiceException("腾讯云回执查询异常"+e.getMessage());
+            log.error("腾讯云短信回执手机号方式查询异常:{}", Throwables.getStackTraceAsString(e));
+            throw new ServiceException("腾讯云回执查询异常" + Throwables.getStackTraceAsString(e));
         }
     }
 }

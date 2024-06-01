@@ -3,6 +3,7 @@ package com.metax.web.service.impl;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.web.domain.AjaxResult;
 import com.metax.web.domain.weChat.EnterpriseWeChatRobotConfig;
 import com.metax.web.domain.weChat.EnterpriseWeChatRootResult;
@@ -75,7 +76,7 @@ public class MaterialServiceImpl implements MaterialService {
             file = new File(multipartFile.getOriginalFilename());
             FileUtils.writeByteArrayToFile(file, multipartFile.getBytes());
         } catch (IOException e) {
-            log.error("文件上传失败:{}", e.getMessage());
+            log.error("文件上传失败:{}", Throwables.getStackTraceAsString(e));
         }
         String response = HttpRequest.post(url)
                 .form(IdUtil.fastSimpleUUID(), file)

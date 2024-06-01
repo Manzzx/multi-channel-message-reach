@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import static com.metax.common.core.constant.MetaxDataConstants.DING_DING_ROBOT;
 
 /**
- * 对发送mq前需要映射转换的类型进行处理
+ * 对发送mq前需要映射转换的类型进行处理（消息推送流程扩展案例 可在推送流程中去掉）
  * @Author: hanabi
  * @DateTime: 2023/10/6 21:45
  **/

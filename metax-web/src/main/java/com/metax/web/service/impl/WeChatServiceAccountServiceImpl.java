@@ -1,5 +1,6 @@
 package com.metax.web.service.impl;
 
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.service.WeChatServiceAccountService;
 import com.metax.web.util.AccountUtil;
@@ -31,8 +32,8 @@ public class WeChatServiceAccountServiceImpl implements WeChatServiceAccountServ
         try {
             allPrivateTemplate = wxMpService.getTemplateMsgService().getAllPrivateTemplate();
         } catch (Exception e) {
-            log.error("微信服务号模板信息获取失败 :{}", e.getMessage());
-            throw new ServiceException(e.getMessage());
+            log.error("微信服务号模板信息获取失败 :{}", Throwables.getStackTraceAsString(e));
+            throw new ServiceException(Throwables.getStackTraceAsString(e));
         }
         return allPrivateTemplate;
     }
@@ -47,8 +48,8 @@ public class WeChatServiceAccountServiceImpl implements WeChatServiceAccountServ
                     .filter(template -> templateId.equals(template.getTemplateId())).findFirst();
             return wxMpTemplateOptional.orElse(null);
         } catch (Exception e) {
-            log.error("微信服务号模板信息获取失败 :{}", e.getMessage());
-            throw new ServiceException(e.getMessage());
+            log.error("微信服务号模板信息获取失败 :{}", Throwables.getStackTraceAsString(e));
+            throw new ServiceException(Throwables.getStackTraceAsString(e));
         }
     }
 }

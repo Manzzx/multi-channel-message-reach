@@ -1,6 +1,7 @@
 package com.metax.web.handler;
 
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.domain.aliyun.AlibabaCloudSmsConfig;
 import com.metax.web.dto.content.SmsContentModel;
@@ -43,7 +44,7 @@ public class AlibabaCloudServiceSmsHandler extends ChannelHandler {
             dataUtil.confirmSend(bzid, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            log.error("阿里云短信发送异常:" + e.getMessage());
+            log.error("阿里云短信发送异常:{}" , Throwables.getStackTraceAsString(e));
         }
 
     }

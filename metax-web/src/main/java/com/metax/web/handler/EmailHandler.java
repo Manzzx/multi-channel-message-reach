@@ -6,6 +6,7 @@ import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.constant.MetaxDataConstants;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.MessageTemplate;
@@ -78,7 +79,7 @@ public class EmailHandler extends ChannelHandler {
             dataUtil.confirmSend(sendId, sendTaskInfo.getMessageId(), sendMessageKey, sendTaskId,new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(sendId, sendTaskInfo.getMessageId(), sendMessageKey, sendTaskId,e);
-            e.printStackTrace();
+            log.error("邮件消息推送失败:{}", Throwables.getStackTraceAsString(e));
         }
     }
 

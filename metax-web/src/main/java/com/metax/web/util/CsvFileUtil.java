@@ -10,6 +10,7 @@ import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.google.common.base.Throwables;
 import com.metax.common.core.web.domain.AjaxResult;
 import com.metax.web.domain.MessageTemplate;
 import com.metax.web.dto.SendForm;
@@ -83,7 +84,7 @@ public class CsvFileUtil {
             sendForm.setSender(sender);
         }catch (Exception e){
             sendForm.setIsNeedBreak(true);
-            sendForm.setResponse(AjaxResult.error("csv文件读取异常:"+e.getMessage()));
+            sendForm.setResponse(AjaxResult.error("csv文件读取异常:"+ Throwables.getStackTraceAsString(e)));
             return sendForm;
         }
         return sendForm;

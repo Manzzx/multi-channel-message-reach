@@ -1,13 +1,17 @@
 package com.metax.web.util;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.RandomUtil;
 import com.metax.common.core.constant.MetaxDataConstants;
-import com.metax.common.core.utils.uuid.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.metax.common.core.constant.MetaxDataConstants.*;
 
@@ -17,18 +21,32 @@ import static com.metax.common.core.constant.MetaxDataConstants.*;
  * @author hanabi
  * @date 2023-09-18
  */
+@Component
 public class RedisKeyUtil {
 
-    private static final AtomicLong counter = new AtomicLong(0);
+    //用来生成当天消息的递增id key:metax:daily_msg_id:messageTemplateId
+    private static final String DAILY_MSG_KEY = APPLICATION_NAME + "daily_msg_id:";
+    ////用来生成当天消息任务的递增id key:metax:daily_task_id
+    private static final String DAILY_TASK_KEY = APPLICATION_NAME + "daily_task_id";
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
-    public static long createMessageId() {
-        // 获取当前时间戳（毫秒）
-        long timestamp = System.currentTimeMillis();
-        // 生成随机数（0-999）
-        int randomPart = (int) (Math.random() * 1000);
-        long sequence = counter.incrementAndGet();
-        // 组合时间戳、随机数和序列
-        return (timestamp << 22) | (randomPart << 12) | sequence;
+    /**
+     * 生成消息id
+     * @param id
+     * @return
+     */
+    public long createMessageId(Long id) {
+        String key = DAILY_MSG_KEY + id;
+        Long increment = stringRedisTemplate.opsForValue().increment(key);
+        if (1 == increment){
+            // 设置 ID 为每天 0 点过期
+            stringRedisTemplate.expireAt(key, LocalDate.now().atStartOfDay().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
+        }
+        //以消息模板+当天发送次数作为id
+        StringBuilder stringBuilder = new StringBuilder();
+        String strId = stringBuilder.append(id).append(increment).toString();
+        return Long.parseLong(strId);
     }
 
     /**
@@ -36,14 +54,13 @@ public class RedisKeyUtil {
      *
      * @return
      */
-    public static Long createSendTaskId() {
-        // 获取当前时间戳（毫秒）
-        long timestamp = System.currentTimeMillis();
-        // 生成随机数（0-999）
-        int randomPart = (int) (Math.random() * 1000);
-        long sequence = counter.incrementAndGet();
-        // 组合时间戳、随机数和序列
-        return (timestamp << 22) | (randomPart << 12) | sequence;
+    public long createSendTaskId() {
+        Long increment = stringRedisTemplate.opsForValue().increment(DAILY_TASK_KEY);
+        if (1 == increment){
+            // 设置 ID 为每天 0 点过期
+            stringRedisTemplate.expireAt(DAILY_TASK_KEY, LocalDate.now().atStartOfDay().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return increment;
     }
 
     /**

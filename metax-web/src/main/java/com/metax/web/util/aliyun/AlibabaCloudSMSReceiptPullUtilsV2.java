@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.aliyun.dysmsapi20170525.models.QuerySendDetailsRequest;
 import com.aliyun.dysmsapi20170525.models.QuerySendDetailsResponse;
 import com.aliyun.dysmsapi20170525.models.QuerySendDetailsResponseBody;
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.aliyun.AlibabaCloudSmsConfig;
 import com.metax.web.domain.aliyun.QueryAlibabaCloudSMSReceiptParam;
@@ -83,7 +84,7 @@ public class AlibabaCloudSMSReceiptPullUtilsV2 {
             smsRecordPage.setSmsRecords(smsRecords);
             smsRecordPage.setTotal(Long.parseLong(queryResp.body.totalCount));
         } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
+            throw new ServiceException(Throwables.getStackTraceAsString(e));
         }
         return smsRecordPage;
     }

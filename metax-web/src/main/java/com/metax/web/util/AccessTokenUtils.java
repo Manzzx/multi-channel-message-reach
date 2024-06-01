@@ -6,6 +6,7 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.push.getui.GeTuiConfig;
 import com.metax.web.domain.push.getui.GeTuiTokenResultDTO;
@@ -50,7 +51,7 @@ public class AccessTokenUtils {
                 return result.getData();
             }
         } catch (Exception e) {
-            log.error("个推token 获取出现异常:{}", e.getMessage());
+            log.error("个推token 获取出现异常:{}", Throwables.getStackTraceAsString(e));
             return null;
         }
         return null;

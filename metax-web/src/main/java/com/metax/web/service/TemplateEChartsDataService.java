@@ -9,4 +9,6 @@ import com.metax.web.vo.echarts.TemplateEChartsData;
 public interface TemplateEChartsDataService {
 
     public TemplateEChartsData getTemplateEChartsData(String day, Long id);
+
+    void clearThreadData();
 }

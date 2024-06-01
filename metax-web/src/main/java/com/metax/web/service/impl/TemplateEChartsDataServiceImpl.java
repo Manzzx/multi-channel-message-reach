@@ -42,32 +42,32 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
     private DataUtil dataUtil;
+
     //展示在页面的最近发送用户的最大值
     private static final int userSize = 9;
-
-
-    private Long id;
-    private String day;
+    //当前请求线程数据
+    private static final ThreadLocal<Long> ID = new ThreadLocal<>();
+    private static final ThreadLocal<String> DAY = new ThreadLocal<>();
     //该模板总发送人数
-    private int totalNum = 0;
+    private static final ThreadLocal<Integer> TOTAL_NUM = ThreadLocal.withInitial(() -> 0);
     //该模板当天发送人数
-    private int dayNum = 0;
+    private static final ThreadLocal<Integer> DAY_NUM = ThreadLocal.withInitial(() -> 0);
     //该模板当天发送成功人数
-    private int success = 0;
+    private static final ThreadLocal<Integer> SUCCESS = ThreadLocal.withInitial(() -> 0);
     //该模板当天发送中人数
-    private int sending = 0;
+    private static final ThreadLocal<Integer> SENDING = ThreadLocal.withInitial(() -> 0);
     //该模板当天发送失败人数
-    private int fail = 0;
+    private static final ThreadLocal<Integer> FAIL = ThreadLocal.withInitial(() -> 0);
     //存放userSize大小的模板最近用户的发送情况
-    private Map<String, Integer> templateSendUserNum = new HashMap<>();
+    private static final ThreadLocal<Map<String, Integer>> TEMPLATE_SEND_USER_NUM = ThreadLocal.withInitial(HashMap::new);
     //当天每个消息状态六个时间段的数据
-    private Map<Integer, Integer> successList;
-    private Map<Integer, Integer> sendingList;
-    private Map<Integer, Integer> failList;
+    private static final ThreadLocal<Map<Integer, Integer>> SUCCESS_LIST = new ThreadLocal<>();
+    private static final ThreadLocal<Map<Integer, Integer>> SENDING_LIST = new ThreadLocal<>();
+    private static final ThreadLocal<Map<Integer, Integer>> FAIL_LIST = new ThreadLocal<>();
     //存放模板当天 发送成功 发送失败 发送中的次数
-    private Map<Integer, Integer> templateStatus;
+    private static final ThreadLocal<Map<Integer, Integer>> TEMPLATE_STATUS = new ThreadLocal<>();
     //存放用户当天发送的所有模板情况 用于计算当前模板占比
-    private Map<Long, Integer> templateCountOfDay = new HashMap<>();
+    private static final ThreadLocal<Map<Long, Integer>> TEMPLATE_COUNT_OF_DAY = ThreadLocal.withInitial(HashMap::new);
 
     /**
      * 模板分析数据
@@ -81,7 +81,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
     public TemplateEChartsData getTemplateEChartsData(String day, Long id) {
         //初始化数据
         initTemplateData(day, id);
-        if (this.id == null || this.id == 0) {
+        if (ID.get() == null || ID.get() == 0) {
             return null;
         }
         TemplateEChartsData.ShowPanelData showPanelData = buildShowPanelData();
@@ -89,9 +89,29 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         TemplateEChartsData.ShowPieChartData showPieChartData = buildShowPieChartData();
         TemplateEChartsData.ShowBarChartData showBarChartData = buildShowBarChartData();
         TemplateEChartsData.ShowLineChartData showLineChartData = buildShowLineChartData();
-
+        clearThreadData();
         return TemplateEChartsData.builder().showPanelData(showPanelData).showUserEncodeData(showUserEncodeData)
                 .showPieChartData(showPieChartData).showBarChartData(showBarChartData).showLineChartData(showLineChartData).build();
+    }
+
+    /**
+     * 释放线程数据
+     */
+    @Override
+    public void clearThreadData() {
+        ID.remove();
+        DAY.remove();
+        TOTAL_NUM.remove();
+        DAY_NUM.remove();
+        SUCCESS.remove();
+        SENDING.remove();
+        FAIL.remove();
+        TEMPLATE_SEND_USER_NUM.remove();
+        SUCCESS_LIST.remove();
+        SENDING_LIST.remove();
+        FAIL_LIST.remove();
+        TEMPLATE_STATUS.remove();
+        TEMPLATE_COUNT_OF_DAY.remove();
     }
 
     /**
@@ -101,12 +121,12 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      */
     private TemplateEChartsData.ShowLineChartData buildShowLineChartData() {
         // 获取前七天日期
-        List<String> previousSevenDays = getPreviousSevenDays(day);
+        List<String> previousSevenDays = getPreviousSevenDays(DAY.get());
         TemplateEChartsData.ShowLineChartData.XAxis xAxis = TemplateEChartsData.ShowLineChartData.XAxis.builder().data(previousSevenDays).build();
         //存放模板七天的发送情况
         List<Map<Integer, Integer>> channelMapList = new ArrayList<>();
         for (int i = 0; i < previousSevenDays.size(); i++) {
-            String key = RedisKeyUtil.getTemplateCountOfDayRedisKey(id, previousSevenDays.get(i));
+            String key = RedisKeyUtil.getTemplateCountOfDayRedisKey(ID.get(), previousSevenDays.get(i));
             Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries(key);
 
             if (CollectionUtil.isEmpty(entries)) {
@@ -155,9 +175,9 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         data.add("20:00~23:59");
 
         List<TemplateEChartsData.ShowBarChartData.Series> series = new ArrayList<>();
-        series.add(buildSeries("发送成功", successList));
-        series.add(buildSeries("发送中", sendingList));
-        series.add(buildSeries("发送失败", failList));
+        series.add(buildSeries("发送成功", SUCCESS_LIST.get()));
+        series.add(buildSeries("发送中", SENDING_LIST.get()));
+        series.add(buildSeries("发送失败", FAIL_LIST.get()));
         TemplateEChartsData.ShowBarChartData.XAxis xAxis = TemplateEChartsData.ShowBarChartData.XAxis.builder().data(data).build();
 
         return TemplateEChartsData.ShowBarChartData.builder().xAxis(xAxis).series(series).build();
@@ -183,7 +203,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      * @return
      */
     private TemplateEChartsData.ShowPieChartData buildShowPieChartData() {
-        return TemplateEChartsData.ShowPieChartData.builder().success(this.success).sending(this.sending).fail(this.fail).build();
+        return TemplateEChartsData.ShowPieChartData.builder().success(SUCCESS.get()).sending(SENDING.get()).fail(FAIL.get()).build();
     }
 
     /**
@@ -198,7 +218,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         first.add("amount");
         first.add("product");
         source.add(first);
-        for (Map.Entry<String, Integer> entry : this.templateSendUserNum.entrySet()) {
+        for (Map.Entry<String, Integer> entry : TEMPLATE_SEND_USER_NUM.get().entrySet()) {
             List<String> element = new ArrayList<>();
             element.add("0");
             element.add(entry.getValue().toString());
@@ -213,8 +233,6 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
 //            element.add(entry.getKey());
             source.add(element);
         }
-        //清空原数据
-        templateSendUserNum = new HashMap<>();
         return TemplateEChartsData.ShowUserEncodeData.builder().source(source).build();
     }
 
@@ -226,12 +244,12 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
     private TemplateEChartsData.ShowPanelData buildShowPanelData() {
         Long userId = SecurityContextHolder.getUserId();
         Map<Object, Object> entries = stringRedisTemplate.opsForHash().entries(TEMPLATE_SEND_NUMBER_NAME + userId);
-        if (entries.get(id.toString()) != null) {
-            this.totalNum = Integer.parseInt(entries.get(id.toString()).toString());
+        if (entries.get(ID.get().toString()) != null) {
+            TOTAL_NUM.set(Integer.parseInt(entries.get(ID.get().toString()).toString()));
         }
         //当天发送总人数
         int allOfDay = 0;
-        for (Map.Entry<Long, Integer> entry : templateCountOfDay.entrySet()) {
+        for (Map.Entry<Long, Integer> entry : TEMPLATE_COUNT_OF_DAY.get().entrySet()) {
             allOfDay += Integer.parseInt(entry.getValue().toString());
         }
         //送达率
@@ -239,17 +257,13 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
         //当天推送占比
         double pushPercentage = 0;
         if (allOfDay != 0) {
-            pushPercentage = ((double) this.dayNum / allOfDay) * 100;
+            pushPercentage = ((double) DAY_NUM.get() / allOfDay) * 100;
         }
-        if (this.dayNum != 0) {
-            deliverAbility = ((double) this.success / this.dayNum) * 100;
+        if (DAY_NUM.get() != 0) {
+            deliverAbility = ((double) SUCCESS.get() / DAY_NUM.get()) * 100;
         }
-        TemplateEChartsData.ShowPanelData showPanelData = TemplateEChartsData.ShowPanelData.builder().totalNum(this.totalNum)
-                .dayNum(this.dayNum).deliverAbility(deliverAbility).pushPercentage(pushPercentage).build();
-        //清空旧数据
-        this.totalNum = 0;
-        this.dayNum = 0;
-        this.templateCountOfDay = new HashMap<>();
+        TemplateEChartsData.ShowPanelData showPanelData = TemplateEChartsData.ShowPanelData.builder().totalNum(TOTAL_NUM.get())
+                .dayNum(DAY_NUM.get()).deliverAbility(deliverAbility).pushPercentage(pushPercentage).build();
         return showPanelData;
     }
 
@@ -261,7 +275,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
             day = RedisKeyUtil.getCurrentDay();
         }
         Long userId = SecurityContextHolder.getUserId();
-        this.day = day;
+        DAY.set(day);
         if (id == null || id == 0) {
             //模板id为空 使用该用户最近的一个模板
             LambdaQueryWrapper<MessageTemplate> wrapper = Wrappers.lambdaQuery();
@@ -273,7 +287,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
             }
             id = template.getId();
         }
-        this.id = id;
+        ID.set(id);
         //获取当天消息key
         String redisKey = RedisKeyUtil.getMessageRedisKey(userId, day);
         //提前处理数据
@@ -290,16 +304,11 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      */
     public void processingData(String redisKey, Long id, String day) {
         List<String> list = stringRedisTemplate.opsForList().range(redisKey, 0, -1);
-        //清除缓存
-        successList = createMap();
-        sendingList = createMap();
-        failList = createMap();
-
-        this.success = 0;
-        this.sending = 0;
-        this.fail = 0;
-
-        this.templateStatus = initTemplateStatus();
+        //初始化
+        SUCCESS_LIST.set(createMap());
+        SENDING_LIST.set(createMap());
+        FAIL_LIST.set(createMap());
+        TEMPLATE_STATUS.set(initTemplateStatus());
         if (CollectionUtil.isEmpty(list)) {
             return;
         }
@@ -318,45 +327,45 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
                 if (templateId.equals(id)) {
                     //统计指定日期发送成功、失败情况和发送中
                     if (MSG_SUCCESS.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
-                        this.success += sendTaskInfo.getReceivers().size();
-                        computeListData(successList, sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
+                        SUCCESS.set(SUCCESS.get()+sendTaskInfo.getReceivers().size());
+                        computeListData(SUCCESS_LIST.get(), sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
                         //统计模板的当天发送情况
-                        templateStatus.put(MSG_SUCCESS, templateStatus.get(MSG_SUCCESS) + sendTaskInfo.getReceivers().size());
+                        TEMPLATE_STATUS.get().put(MSG_SUCCESS, TEMPLATE_STATUS.get().get(MSG_SUCCESS) + sendTaskInfo.getReceivers().size());
                     }
                     if (MSG_FAIL.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
-                        this.fail += sendTaskInfo.getReceivers().size();
-                        computeListData(failList, sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
+                        FAIL.set(FAIL.get()+sendTaskInfo.getReceivers().size());
+                        computeListData(FAIL_LIST.get(), sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
                         //统计模板的当天发送情况
-                        templateStatus.put(MSG_FAIL, templateStatus.get(MSG_FAIL) + sendTaskInfo.getReceivers().size());
+                        TEMPLATE_STATUS.get().put(MSG_FAIL, TEMPLATE_STATUS.get().get(MSG_FAIL) + sendTaskInfo.getReceivers().size());
                     }
                     if (MSG_SENDING.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
-                        this.sending += sendTaskInfo.getReceivers().size();
-                        computeListData(sendingList, sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
+                        SENDING.set(SENDING.get()+sendTaskInfo.getReceivers().size());
+                        computeListData(SENDING_LIST.get(), sendTaskInfo.getSendStartTime(), sendTaskInfo.getReceivers().size());
                         //统计模板的当天发送情况
-                        templateStatus.put(MSG_SENDING, templateStatus.get(MSG_SENDING) + sendTaskInfo.getReceivers().size());
+                        TEMPLATE_STATUS.get().put(MSG_SENDING, TEMPLATE_STATUS.get().get(MSG_SENDING) + sendTaskInfo.getReceivers().size());
                     }
                     sendTotalOfDay.set(sendTotalOfDay.get() + sendTaskInfo.getReceivers().size());
 
                     for (String receiver : sendTaskInfo.getReceivers()) {
-                        if (templateSendUserNum.containsKey(receiver)) {
-                            templateSendUserNum.put(receiver, templateSendUserNum.get(receiver) + 1);
+                        if (TEMPLATE_SEND_USER_NUM.get().containsKey(receiver)) {
+                            TEMPLATE_SEND_USER_NUM.get().put(receiver, TEMPLATE_SEND_USER_NUM.get().get(receiver) + 1);
                         } else {
-                            if (templateSendUserNum.size() < userSize) {
-                                templateSendUserNum.put(receiver, 1);
+                            if (TEMPLATE_SEND_USER_NUM.get().size() < userSize) {
+                                TEMPLATE_SEND_USER_NUM.get().put(receiver, 1);
                             }
                         }
                     }
                 }
                 //统计所有模板
-                if (templateCountOfDay.containsKey(templateId)) {
-                    templateCountOfDay.put(templateId, templateCountOfDay.get(templateId) + sendTaskInfo.getReceivers().size());
+                if (TEMPLATE_COUNT_OF_DAY.get().containsKey(templateId)) {
+                    TEMPLATE_COUNT_OF_DAY.get().put(templateId, TEMPLATE_COUNT_OF_DAY.get().get(templateId) + sendTaskInfo.getReceivers().size());
                 } else {
-                    templateCountOfDay.put(templateId, sendTaskInfo.getReceivers().size());
+                    TEMPLATE_COUNT_OF_DAY.get().put(templateId, sendTaskInfo.getReceivers().size());
                 }
             });
 
         }
-        this.dayNum = sendTotalOfDay.get();
+        DAY_NUM.set(DAY_NUM.get()+sendTotalOfDay.get());
         recordingNumOfDy(day, id);
         recordingTemplateCount();
     }
@@ -365,13 +374,13 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      * 记录模板当天发送情况
      */
     private void recordingTemplateCount() {
-        Set<Map.Entry<Integer, Integer>> entrySet = templateStatus.entrySet();
+        Set<Map.Entry<Integer, Integer>> entrySet = TEMPLATE_STATUS.get().entrySet();
         //类型转换
         Map<String, String> convertedMap = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : entrySet) {
             convertedMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
         }
-        stringRedisTemplate.opsForHash().putAll(RedisKeyUtil.getTemplateCountOfDayRedisKey(id, day), convertedMap);
+        stringRedisTemplate.opsForHash().putAll(RedisKeyUtil.getTemplateCountOfDayRedisKey(ID.get(), DAY.get()), convertedMap);
     }
 
 
@@ -380,7 +389,7 @@ public class TemplateEChartsDataServiceImpl implements TemplateEChartsDataServic
      */
     private void recordingNumOfDy(String day, Long id) {
         Long userId = SecurityContextHolder.getUserId();
-        Set<Map.Entry<Long, Integer>> entrySet = templateCountOfDay.entrySet();
+        Set<Map.Entry<Long, Integer>> entrySet = TEMPLATE_COUNT_OF_DAY.get().entrySet();
         //类型转换
         Map<String, String> convertedMap = new HashMap<>();
         for (Map.Entry<Long, Integer> entry : entrySet) {

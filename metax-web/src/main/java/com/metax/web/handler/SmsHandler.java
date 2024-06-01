@@ -2,6 +2,7 @@ package com.metax.web.handler;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.google.common.base.Throwables;
 import com.metax.web.domain.ChannelAccount;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.service.IChannelAccountService;
@@ -40,9 +41,8 @@ public class SmsHandler extends ChannelHandler{
             //路由到具体哪个第三方短信服务handler
             smsHandlers.get(jsonObject.get(SMS_SERVICE_KEY)+HANDLER_SUFFIX).handler(sendTaskInfo);
         } catch (Exception e) {
-            log.error("短信服务异常:{}",e.getMessage());
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            e.printStackTrace();
+            log.error("短信服务异常:{}", Throwables.getStackTraceAsString(e));
         }
     }
 }

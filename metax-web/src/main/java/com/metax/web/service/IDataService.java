@@ -19,4 +19,6 @@ public interface IDataService {
     ReceiverRecordsPage getReceiverByDay(int pageNum, int pageSize,String receiver, String sendMessageKey);
 
     SendTaskInfoVoPage getUserCurrentDayData(int pageNum, int pageSize, String sendMessageKey, Long userId);
+
+    void clearThreadData();
 }

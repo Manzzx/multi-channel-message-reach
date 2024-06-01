@@ -1,5 +1,6 @@
 package com.metax.web.util.tencent;
 
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.centent.TencentSmsConfig;
 import com.tencentcloudapi.common.Credential;
@@ -98,8 +99,8 @@ public class TencentCloudSmsSendUtils {
 
 
         } catch (Exception e) {
-            log.error("腾讯云短信发送异常:{}", e.getMessage());
-            throw new ServiceException("腾讯云短信发送异常:" + e.getMessage());
+            log.error("腾讯云短信发送异常:{}", Throwables.getStackTraceAsString(e));
+            throw new ServiceException("腾讯云短信发送异常:" + Throwables.getStackTraceAsString(e));
 
         }
 

@@ -36,7 +36,7 @@ public class PreCheckProcess implements BusinessProcess {
         if (StrUtil.isBlank(sendForm.getReceivers())) {
             //中断
             sendForm.setIsNeedBreak(true);
-            sendForm.setResponse(AjaxResult.error(HttpStatus.ERROR,"接受者为空"));
+            sendForm.setResponse(AjaxResult.error(HttpStatus.ERROR,"消息模板id:"+sendForm.getMessageTemplateId()+" 接受者为空"));
             return context;
         }
 
@@ -50,7 +50,7 @@ public class PreCheckProcess implements BusinessProcess {
         if (sendForm.getIsExitVariables() != 0){
             if (StrUtil.isBlank(sendForm.getVariables())){
                 sendForm.setIsNeedBreak(true);
-                sendForm.setResponse(AjaxResult.error(HttpStatus.ERROR,"消息模板带有占位符 请赋值!"));
+                sendForm.setResponse(AjaxResult.error(HttpStatus.ERROR,"消息模板id:"+sendForm.getMessageTemplateId()+" 消息模板带有占位符 请赋值!"));
                 return context;
             }
 
@@ -60,7 +60,7 @@ public class PreCheckProcess implements BusinessProcess {
                 if (jsonObject.keySet().size() < sendForm.getIsExitVariables()){
                     //存在空项
                     context.setIsNeedBreak(true);
-                    context.setResponse(AjaxResult.error(HttpStatus.ERROR,"存在占位符数据为空"));
+                    context.setResponse(AjaxResult.error(HttpStatus.ERROR,"消息模板id:"+sendForm.getMessageTemplateId()+" 存在占位符数据为空"));
                     return context;
                 }
                 for (String key : jsonObject.keySet()) {
@@ -68,7 +68,7 @@ public class PreCheckProcess implements BusinessProcess {
                     if (ObjectUtil.isEmpty(value)) {
                         //存在空项
                         context.setIsNeedBreak(true);
-                        context.setResponse(AjaxResult.error(HttpStatus.ERROR,"存在占位符数据为空"));
+                        context.setResponse(AjaxResult.error(HttpStatus.ERROR,"消息模板id:"+sendForm.getMessageTemplateId()+" 存在占位符数据为空"));
                         return context;
                     }
                 }

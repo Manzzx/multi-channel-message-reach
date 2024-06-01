@@ -7,6 +7,7 @@ import com.dingtalk.api.DefaultDingTalkClient;
 import com.dingtalk.api.DingTalkClient;
 import com.dingtalk.api.request.OapiRobotSendRequest;
 import com.dingtalk.api.response.OapiRobotSendResponse;
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.SendTaskInfo;
 import com.metax.web.domain.dingding.DingDingRobotConfig;
@@ -23,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import static com.metax.common.core.constant.SendMessageTypeConstants.*;
+import static com.metax.common.core.constant.DdingDingSendMessageTypeConstants.*;
 import static com.metax.common.core.constant.MetaxDataConstants.PUSH_NOW;
 
 /**
@@ -55,37 +56,33 @@ public class DingDingRobotUtils {
             at.setAtUserIds(new ArrayList<>(sendTaskInfo.getReceivers()));
         }
 
+        JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
         if (TEXT_NAME.equals(contentModel.getSendType())) {
             //文本类型
-            JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
             DingDingRobotParam.Text text = jsonObject.toJavaObject(DingDingRobotParam.Text.class);
             request.setText(JSON.toJSONString(text));
             request.setMsgtype("text");
         }
         if (LINK_NAME.equals(contentModel.getSendType())) {
             //link类型
-            JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
             DingDingRobotParam.Link link = jsonObject.toJavaObject(DingDingRobotParam.Link.class);
             request.setLink(JSON.toJSONString(link));
             request.setMsgtype("link");
         }
         if (MARKDOWN_NAME.equals(contentModel.getSendType())) {
             //markdown类型
-            JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
             DingDingRobotParam.Markdown markdown = jsonObject.toJavaObject(DingDingRobotParam.Markdown.class);
             request.setMarkdown(JSON.toJSONString(markdown));
             request.setMsgtype("markdown");
         }
         if (ACTION_CARD_NAME.equals(contentModel.getSendType())) {
             //actionCard类型
-            JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
             DingDingRobotParam.ActionCard actionCard = jsonObject.toJavaObject(DingDingRobotParam.ActionCard.class);
             request.setActionCard(JSON.toJSONString(actionCard));
             request.setMsgtype("actionCard");
         }
         if (FEED_CARD_NAME.equals(contentModel.getSendType())) {
             //feedCard类型
-            JSONObject jsonObject = JSON.parseObject(contentModel.getContent());
             DingDingRobotParam.FeedCard feedCard = jsonObject.toJavaObject(DingDingRobotParam.FeedCard.class);
             request.setFeedCard(JSON.toJSONString(feedCard));
             request.setMsgtype("feedCard");
@@ -98,7 +95,7 @@ public class DingDingRobotUtils {
                 throw new ServiceException("响应码:"+response.getErrcode()+" 失败原因:"+response.getErrmsg());
             }
         } catch (Exception e) {
-            throw new ServiceException("钉钉自定义机器人发送异常:"+e.getMessage());
+            throw new ServiceException("钉钉自定义机器人发送异常:"+ Throwables.getStackTraceAsString(e));
         }
     }
 

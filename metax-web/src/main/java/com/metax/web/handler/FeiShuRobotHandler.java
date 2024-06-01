@@ -5,6 +5,7 @@ import cn.hutool.http.Header;
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson2.JSON;
+import com.google.common.base.Throwables;
 import com.metax.common.core.constant.FeiShuRobotConstants;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.SendTaskInfo;
@@ -55,7 +56,7 @@ public class FeiShuRobotHandler extends ChannelHandler {
             dataUtil.confirmSend(result, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.sendTaskId, new Exception());
         } catch (Exception e) {
             dataUtil.confirmSend(null, sendTaskInfo.getMessageId(), sendTaskInfo.getSendMessageKey(), sendTaskInfo.getSendTaskId(), e);
-            log.error("飞书自定义机器人发送异常:" + e.getMessage());
+            log.error("飞书自定义机器人发送异常:{}" , Throwables.getStackTraceAsString(e));
         }
 
 

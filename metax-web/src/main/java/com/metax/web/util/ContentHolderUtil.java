@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.MessageTemplate;
 import com.metax.web.dto.content.WeChatServiceAccountContentModel;
@@ -93,7 +94,7 @@ public class ContentHolderUtil {
         try {
             properties = jsonToProperties(param);
         } catch (Exception e) {
-            log.error("占位符数据解析失败:{}", e.getMessage());
+            log.error("占位符数据解析失败:{}", Throwables.getStackTraceAsString(e));
             throw new ServiceException(e.getMessage());
         }
         assert properties != null;

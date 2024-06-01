@@ -10,6 +10,7 @@ import com.metax.common.core.constant.HttpStatus;
 import com.metax.common.core.context.SecurityContextHolder;
 import com.metax.common.core.web.page.TableDataInfo;
 import com.metax.system.api.domain.SysUser;
+import com.metax.web.config.ChannelConfig;
 import com.metax.web.domain.content.SendContent;
 import com.metax.web.vo.ReceiverRecordsPage;
 import com.metax.web.vo.SendTaskInfoVoPage;
@@ -50,29 +51,34 @@ public class DataServiceImpl implements IDataService {
     public DataUtil dataUtil;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    public ChannelConfig channelConfig;
     //当前用户这天成功发送人数、失败人数和发送中
-    public int success = 0;
-    public int fail = 0;
-    public int sending = 0;
+    private static final ThreadLocal<Integer> SUCCESS = ThreadLocal.withInitial(() -> 0);
+    private static final ThreadLocal<Integer> FAIL = ThreadLocal.withInitial(() -> 0);
+    private static final ThreadLocal<Integer> SENDING = ThreadLocal.withInitial(() -> 0);
     //指定日期的发送成功key
-    public static String successKey = "";
-    public static String failKey = "";
-    public static String sendingKey = "";
+    private static final ThreadLocal<String> SUCCESS_KEY = ThreadLocal.withInitial(() -> "");
+    private static final ThreadLocal<String> FAIL_KEY = ThreadLocal.withInitial(() -> "");
+    private static final ThreadLocal<String> SENDING_KEY = ThreadLocal.withInitial(() -> "");
     //当天渠道统计情况key
-    public static String channelCountKey = "";
+    private static final ThreadLocal<String> CHANNEL_COUNT_KEY = ThreadLocal.withInitial(() -> "");
     //当天下发人数key
-    public static String totalOfDayKey = "";
-    //用于其它类使用
-    public int sendTotalOfDayTem;
-    public Map<Integer, Integer> channelCountTem = new HashMap<>();
-    public int successTem = 0;
-    public int failTem = 0;
-    public int sendingTem = 0;
+    private static final ThreadLocal<String> TOTAL_OF_DAY_KEY = ThreadLocal.withInitial(() -> "");
+    //当天发送总人数
+    public static final ThreadLocal<Integer> SEND_TOTAL_OF_DAY_TEM = ThreadLocal.withInitial(() -> 0);
+    //各渠道发送人数
+    private static final ThreadLocal<Map<Integer, Integer>> CHANNEL_COUNT_TEM = ThreadLocal.withInitial(HashMap::new);
+    //指定日期的发送人数
+    public static final ThreadLocal<Integer> SUCCESS_TEM = ThreadLocal.withInitial(() -> 0);
+    public static final ThreadLocal<Integer> FAIL_TEM = ThreadLocal.withInitial(() -> 0);
+    public static final ThreadLocal<Integer> SENDING_TEM = ThreadLocal.withInitial(() -> 0);
+    //初始化当天渠道发送次数
+    private static final ThreadLocal<Map<Integer, Integer>> CHANNEL_COUNT = ThreadLocal.withInitial(HashMap::new);
 
 
     @Override
     public SendTaskInfoVoPage getCurrentDayData(int pageNum, int pageSize, String sendMessageKey, Long userId) {
-
         String day = null;
         if (StrUtil.isNotBlank(sendMessageKey) && !sendMessageKey.equals("null")) {
             LocalDate date = LocalDate.parse(sendMessageKey);
@@ -84,12 +90,7 @@ public class DataServiceImpl implements IDataService {
             userId = SecurityContextHolder.getUserId();
         }
         String redisKey = RedisKeyUtil.getMessageRedisKey(userId, day);
-        successKey = RedisKeyUtil.getSuccessRedisKey(userId, day);
-        failKey = RedisKeyUtil.getFailRedisKey(userId, day);
-        sendingKey = RedisKeyUtil.getSendingRedisKey(userId, day);
-        channelCountKey = RedisKeyUtil.getSendChannelCountRedisKey(userId, day);
-        totalOfDayKey = RedisKeyUtil.getSendTotalOfDay(userId, day);
-        List<SendTaskInfoVo> sendTaskInfoVos = sendContentsProcess(redisKey);
+        List<SendTaskInfoVo> sendTaskInfoVos = sendContentsProcess(redisKey,userId,day);
         if (CollectionUtil.isEmpty(sendTaskInfoVos)) {
             return SendTaskInfoVoPage.builder().sendTaskInfoVos(new ArrayList<>()).total(0).build();
         }
@@ -99,6 +100,14 @@ public class DataServiceImpl implements IDataService {
         //end是开区间
         List<SendTaskInfoVo> list = sendTaskInfoVos.subList(start, end);
         return SendTaskInfoVoPage.builder().sendTaskInfoVos(list).total(sendTaskInfoVos.size()).build();
+    }
+
+    private void generateKey(Long userId, String day) {
+        SUCCESS_KEY.set(RedisKeyUtil.getSuccessRedisKey(userId, day));
+        FAIL_KEY.set(RedisKeyUtil.getFailRedisKey(userId, day));
+        SENDING_KEY.set(RedisKeyUtil.getSendingRedisKey(userId, day));
+        CHANNEL_COUNT_KEY.set(RedisKeyUtil.getSendChannelCountRedisKey(userId, day));
+        TOTAL_OF_DAY_KEY.set(RedisKeyUtil.getSendTotalOfDay(userId, day));
     }
 
     /**
@@ -184,7 +193,8 @@ public class DataServiceImpl implements IDataService {
         }
         Long userId = SecurityContextHolder.getUserId();
         String redisKey = RedisKeyUtil.getMessageRedisKey(userId, day);
-        List<SendTaskInfoVo> sendTaskInfoVos = sendContentsProcess(redisKey);
+        List<SendTaskInfoVo> sendTaskInfoVos = sendContentsProcess(redisKey,userId,day);
+        clearThreadData();
         //查出条件接受者的消息记录集合
         List<ReceiverRecords> receiverRecordsList = sendTaskInfoVos.stream()
                 .filter(sendTaskInfoVo -> sendTaskInfoVo.getReceivers().contains(receiver))
@@ -223,12 +233,34 @@ public class DataServiceImpl implements IDataService {
     }
 
     /**
+     * 释放线程数据
+     */
+    @Override
+    public void clearThreadData() {
+        SUCCESS.remove();
+        FAIL.remove();
+        SENDING.remove();
+        SUCCESS_KEY.remove();
+        SENDING_KEY.remove();
+        FAIL_KEY.remove();
+        CHANNEL_COUNT_KEY.remove();
+        TOTAL_OF_DAY_KEY.remove();
+        SEND_TOTAL_OF_DAY_TEM.remove();
+        CHANNEL_COUNT_TEM.remove();
+        SUCCESS_TEM.remove();
+        SENDING_TEM.remove();
+        FAIL_TEM.remove();
+        CHANNEL_COUNT.remove();
+    }
+
+    /**
      * 对发送任务上下文集合进行处理
      *
      * @param redisKey
      * @return
      */
-    private List<SendTaskInfoVo> sendContentsProcess(String redisKey) {
+    private List<SendTaskInfoVo> sendContentsProcess(String redisKey,Long userId,String day) {
+        generateKey(userId, day);
         String userName = SecurityContextHolder.getUserName();
         List<String> list = stringRedisTemplate.opsForList().range(redisKey, 0, -1);
         if (CollectionUtil.isEmpty(list)) {
@@ -240,7 +272,8 @@ public class DataServiceImpl implements IDataService {
         //存放当天下发人数
         AtomicReference<Integer> sendTotalOfDay = new AtomicReference<>();
         sendTotalOfDay.set(0);
-
+        //初始化当天渠道发送次数
+        initChannelCount();
         List<SendContent> sendContents = dataUtil.stringConvertSendContext(list);
 
         //返回前端最终数据集合
@@ -249,13 +282,13 @@ public class DataServiceImpl implements IDataService {
             List<SendTaskInfoVo> collect = sendContent.getSendTasks().stream().map(sendTaskInfo -> {
                 //统计指定日期发送成功、失败情况和发送中
                 if (MSG_SUCCESS.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
-                    this.success += sendTaskInfo.getReceivers().size();
+                    SUCCESS.set(SUCCESS.get() + sendTaskInfo.getReceivers().size());
                 }
                 if (MSG_FAIL.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
-                    this.fail += sendTaskInfo.getReceivers().size();
+                    FAIL.set(FAIL.get() + sendTaskInfo.getReceivers().size());
                 }
                 if (MSG_SENDING.equals(sendTaskInfo.getMessageTemplate().getMsgStatus())) {
-                    this.sending += sendTaskInfo.getReceivers().size();
+                    SENDING.set(SENDING.get() + sendTaskInfo.getReceivers().size());
                 }
                 MessageTemplateDataVo dataVo = BeanUtil
                         .copyProperties(sendTaskInfo.getMessageTemplate(), MessageTemplateDataVo.class, "pushType", "sendChannel", "msgStatus");
@@ -263,7 +296,7 @@ public class DataServiceImpl implements IDataService {
                 sendTotalOfDay.set(sendTotalOfDay.get() + sendTaskInfo.getReceivers().size());
                 //统计当天每一个渠道发送次数
                 Integer sendChannel = sendTaskInfo.getMessageTemplate().getSendChannel();
-                dataUtil.channelCount.put(sendChannel, dataUtil.channelCount.get(sendChannel) + sendTaskInfo.getReceivers().size());
+                CHANNEL_COUNT.get().put(sendChannel, CHANNEL_COUNT.get().get(sendChannel) + sendTaskInfo.getReceivers().size());
                 //将各数字类型进行映射转换
                 dataVo.setMsgStatus(dataUtil.statusMapping.get(sendTaskInfo.getMessageTemplate().getMsgStatus()));
                 dataVo.setExpectPushTime(StrUtil.isBlank(sendTaskInfo.getMessageTemplate().getExpectPushTime()) ||
@@ -289,30 +322,26 @@ public class DataServiceImpl implements IDataService {
      * 记录指定日期发送成功、失败情况和发送中
      */
     private void recordingSuccessAndFailAndSendingNum() {
-        this.successTem = this.success;
-        this.failTem = this.fail;
-        this.sendingTem = this.sending;
-        stringRedisTemplate.opsForValue().set(successKey, String.valueOf(this.success));
-        stringRedisTemplate.opsForValue().set(failKey, String.valueOf(this.fail));
-        stringRedisTemplate.opsForValue().set(sendingKey, String.valueOf(this.sending));
-        this.success = 0;
-        this.fail = 0;
-        this.sending = 0;
+        SUCCESS_TEM.set(SUCCESS.get());
+        FAIL_TEM.set(FAIL.get());
+        SENDING_TEM.set(SENDING.get());
+        stringRedisTemplate.opsForValue().set(SUCCESS_KEY.get(), String.valueOf(SUCCESS.get()));
+        stringRedisTemplate.opsForValue().set(FAIL_KEY.get(), String.valueOf(FAIL.get()));
+        stringRedisTemplate.opsForValue().set(SENDING_KEY.get(), String.valueOf(SENDING.get()));
     }
 
     /**
      * 记录指定日期用户渠道发送情况
      */
     private void recordingChannelCount() {
-        this.channelCountTem.putAll(dataUtil.getChannelCount());
-        Set<Map.Entry<Integer, Integer>> entrySet = dataUtil.channelCount.entrySet();
+        CHANNEL_COUNT_TEM.get().putAll(CHANNEL_COUNT.get());
+        Set<Map.Entry<Integer, Integer>> entrySet = CHANNEL_COUNT.get().entrySet();
         //类型转换
         Map<String, String> convertedMap = new HashMap<>();
         for (Map.Entry<Integer, Integer> entry : entrySet) {
             convertedMap.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
         }
-        stringRedisTemplate.opsForHash().putAll(channelCountKey, convertedMap);
-        dataUtil.initChannelCount();
+        stringRedisTemplate.opsForHash().putAll(CHANNEL_COUNT_KEY.get(), convertedMap);
     }
 
     /**
@@ -321,8 +350,13 @@ public class DataServiceImpl implements IDataService {
      * @param total
      */
     private void recordingSendTotalOfDay(Integer total) {
-        this.sendTotalOfDayTem = total;
-        stringRedisTemplate.opsForValue().set(totalOfDayKey, String.valueOf(total));
+        SEND_TOTAL_OF_DAY_TEM.set(total);
+        stringRedisTemplate.opsForValue().set(TOTAL_OF_DAY_KEY.get(), String.valueOf(total));
+    }
+
+    public void initChannelCount() {
+        //初始化当天渠道发送次数
+        channelConfig.channels.forEach(channel -> CHANNEL_COUNT.get().put(channel, 0));
     }
 
 }

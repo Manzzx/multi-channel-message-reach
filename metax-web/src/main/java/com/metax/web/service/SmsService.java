@@ -1,6 +1,5 @@
 package com.metax.web.service;
 
-import com.metax.common.core.web.domain.AjaxResult;
 import com.metax.web.dto.QuerySmsRecordDto;
 import com.metax.web.vo.SmsRecordPage;
 
@@ -10,9 +9,9 @@ import com.metax.web.vo.SmsRecordPage;
  **/
 public interface SmsService {
 
-    SmsRecordPage pushRecord(QuerySmsRecordDto param);
+    SmsRecordPage pullRecord(QuerySmsRecordDto param);
 
-    SmsRecordPage pushRecentRecord(QuerySmsRecordDto params);
+    SmsRecordPage pullRecentRecord(QuerySmsRecordDto params);
 
     boolean clear();
 }

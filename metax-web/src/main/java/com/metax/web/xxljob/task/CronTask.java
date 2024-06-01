@@ -1,6 +1,7 @@
 package com.metax.web.xxljob.task;
 
 import cn.hutool.core.util.StrUtil;
+import com.google.common.base.Throwables;
 import com.metax.web.handler.CronTaskHandler;
 import com.metax.web.util.DataUtil;
 import com.xxl.job.core.context.XxlJobHelper;
@@ -33,7 +34,7 @@ public class CronTask {
     @Autowired
     private DataUtil dataUtil;
     // 监听线程池
-    private static final ExecutorService LISTEN_EXECUTOR = Executors.newSingleThreadExecutor();
+    private static final ExecutorService LISTEN_EXECUTOR = Executors.newCachedThreadPool();
 
     // 创建一个阻塞队列 用来存放定时任务
     private final BlockingQueue<Runnable> taskQueue = new LinkedBlockingQueue<>(BIG_QUEUE_SIZE);
@@ -46,7 +47,7 @@ public class CronTask {
                 try {
                     xxlDtpExecutor.execute(taskQueue.take());
                 } catch (Exception e) {
-                    log.error("定时任务处理异常:{}", e.getMessage());
+                    log.error("定时任务处理异常:{}", Throwables.getStackTraceAsString(e));
                 }
             }
         });
@@ -61,7 +62,7 @@ public class CronTask {
         try {
             taskQueue.put(() -> cronTaskHandler.Handler(Long.valueOf(params.get(0)), Long.valueOf(params.get(1))));
         } catch (Exception e) {
-            log.error("定时任务提交异常:{}", e.getMessage());
+            log.error("定时任务提交异常:{}", Throwables.getStackTraceAsString(e));
         }
     }
 }

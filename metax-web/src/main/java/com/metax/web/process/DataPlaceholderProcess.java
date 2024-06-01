@@ -41,6 +41,8 @@ public class DataPlaceholderProcess implements BusinessProcess {
     private ChannelConfig channelConfig;
     @Autowired
     private ContentHolderUtil contentHolderUtil;
+    @Autowired
+    private RedisKeyUtil redisKeyUtil;
 
     @Override
     public ProcessContent process(ProcessContent context) {
@@ -55,7 +57,7 @@ public class DataPlaceholderProcess implements BusinessProcess {
         //设置发送状态
         messageTemplate.setMsgStatus(MetaxDataConstants.MSG_SENDING);
         //生成本次发送任务id
-        Long sendTaskId = RedisKeyUtil.createSendTaskId();
+        Long sendTaskId = redisKeyUtil.createSendTaskId();
 
         //无占位符发送 只有一个sendTask
         if (sendTaskParamContext.getIsExitVariables() == 0) {
@@ -65,12 +67,12 @@ public class DataPlaceholderProcess implements BusinessProcess {
             channelConfig.needSkid.forEach(channel -> {
                 if (channel.equals(sendTaskParamContext.getSendChannel())) {
                     //无占位符 不用传参到第三方服务 直接发送
-                    processingSpecialChannel(channel,messageTemplate);
+                    processingSpecialChannel(channel, messageTemplate);
                 }
             });
             SendTaskInfo sendTask = SendTaskInfo.builder().messageTemplate(messageTemplate)
                     .receivers(sendTaskParamContext.getSendTaskParams().get(StrUtil.EMPTY))
-                    .messageId(RedisKeyUtil.createMessageId())
+                    .messageId(redisKeyUtil.createMessageId(messageTemplate.getId()))
                     .sendMessageKey(messageRedisKey)
                     .sendTaskId(sendTaskId)
                     .sendStartTime(LocalDateTime.now())
@@ -86,7 +88,7 @@ public class DataPlaceholderProcess implements BusinessProcess {
         }
 
         //有占位符发送
-        return buildSendContext(sendTaskParamContext, messageTemplate);
+        return buildSendContext(sendTaskParamContext, messageTemplate, sendTaskId);
     }
 
     /**
@@ -96,10 +98,8 @@ public class DataPlaceholderProcess implements BusinessProcess {
      * @param messageTemplate
      * @return
      */
-    private SendContent buildSendContext(SendTaskParamContent sendTaskParamContext, MessageTemplate messageTemplate) {
+    private SendContent buildSendContext(SendTaskParamContent sendTaskParamContext, MessageTemplate messageTemplate, Long sendTaskId) {
         Map<String, Set<String>> sendTaskParams = sendTaskParamContext.getSendTaskParams();
-        //生成本次发送任务id
-        Long sendTaskId = RedisKeyUtil.createSendTaskId();
         //生成发送任务redisKey
         String messageRedisKey = RedisKeyUtil.createMessageRedisKey(sendTaskParamContext.getSender());
 
@@ -124,14 +124,13 @@ public class DataPlaceholderProcess implements BusinessProcess {
             }
 
             SendTaskInfo sendTask = SendTaskInfo.builder().receivers(entry.getValue()).messageTemplate(copyMessageTemplate)
-                    .messageId(RedisKeyUtil.createMessageId())
+                    .messageId(redisKeyUtil.createMessageId(copyMessageTemplate.getId()))
                     .sendMessageKey(messageRedisKey)
                     .sendTaskId(sendTaskId)
                     .sendStartTime(LocalDateTime.now())
                     .build();
             sendTasks.add(sendTask);
         }
-
 
         return SendContent.builder().sendCode(MetaxDataConstants.SEND_CODE)
                 .sendTasks(sendTasks)

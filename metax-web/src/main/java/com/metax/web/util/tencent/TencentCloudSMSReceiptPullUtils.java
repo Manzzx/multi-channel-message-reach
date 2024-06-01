@@ -1,6 +1,7 @@
 package com.metax.web.util.tencent;
 
 import cn.hutool.core.util.StrUtil;
+import com.google.common.base.Throwables;
 import com.metax.common.core.exception.ServiceException;
 import com.metax.web.domain.centent.TencentSmsConfig;
 import com.metax.web.dto.QuerySmsRecordDto;
@@ -105,8 +106,8 @@ public class TencentCloudSMSReceiptPullUtils {
             return smsRecordPage;
 
         } catch (Exception e) {
-            log.error("腾讯云短信回执查询异常:{}",e.getMessage());
-            throw new ServiceException(e.getMessage());
+            log.error("腾讯云短信回执查询异常:{}", Throwables.getStackTraceAsString(e));
+            throw new ServiceException(Throwables.getStackTraceAsString(e));
         }
 
     }
